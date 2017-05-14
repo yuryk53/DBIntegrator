@@ -80,7 +80,20 @@
                 <Grid Style="{StaticResource tabGrids}"/>
             </TabItem>
             <TabItem Header="Query">
-                <Grid Style="{StaticResource tabGrids}"/>
+                <Grid Style="{StaticResource tabGrids}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50*" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="50*" />
+                    </Grid.RowDefinitions>
+                    <GridSplitter Grid.Row="1"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Center"
+                          Background="LightSlateGray" 
+                          ShowsPreview="True"
+                          Height="5"
+                       />
+                </Grid>
             </TabItem>
             <TabItem Header="Mapping Generator" Height="155" Margin="0,0,0,0" FontWeight="Bold">
                 <Grid Style="{StaticResource tabGrids}"/>
