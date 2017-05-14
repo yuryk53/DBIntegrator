@@ -5,8 +5,89 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DBIntegrator"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="589" Width="1157.6">
+    <Window.Effect>
+        <DropShadowEffect Opacity="0.5"/>
+    </Window.Effect>
     <Grid>
-        
+        <Grid.Background>
+            <RadialGradientBrush>
+                <GradientStop Color="White"/>
+                <GradientStop Color="#FFE4E4E4" Offset="1"/>
+            </RadialGradientBrush>
+        </Grid.Background>
+        <TabControl x:Name="tabControl" TabStripPlacement="Left" Margin="6,10,10,10" BorderThickness="3">
+            <TabControl.Resources>
+                <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type TabItem}">
+                                <Grid>
+                                    <Border Name="Border" Margin="2,2,-8,0" BorderBrush="Black" BorderThickness="1,1,1,1" CornerRadius="10">
+                                        <Border.Background>
+                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                <GradientStop Color="#FFB6B6B6" Offset="0.687"/>
+                                                <GradientStop Color="White"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <ContentPresenter x:Name="ContentSite" ContentSource="Header" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2,2,12,2" RecognizesAccessKey="True"/>
+                                    </Border>
+                                    <Rectangle Height="200" Width="10" Margin="0,0,-10,0" Stroke="Black" VerticalAlignment="Bottom" HorizontalAlignment="Right" StrokeThickness="0" Fill="#FFD4D0C8"/>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                        <Setter TargetName="ContentSite" Property="Width" Value="30" />
+                                        <Setter TargetName="Border" Property="Background" Value="#FFD4D0C8" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter TargetName="Border" Property="Background" Value="#FF6E6C67" />
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="true">
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="HeaderTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <ContentPresenter Content="{TemplateBinding Content}">
+                                    <ContentPresenter.LayoutTransform>
+                                        <RotateTransform Angle="270" />
+                                    </ContentPresenter.LayoutTransform>
+                                </ContentPresenter>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Background" Value="#FF6E6C67" />
+                    <Setter Property="Height" Value="90" />
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="FontFamily" Value="DokChampa" />
+                    <Setter Property="FontSize" Value="14" />
+                    <Setter Property="VerticalAlignment" Value="Top" />
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                    <Setter Property="UseLayoutRounding" Value="False" />
+                </Style>
+                <Style x:Key="tabGrids">
+                    <Setter Property="Grid.Background" Value="#FFE5E5E5" />
+                    <Setter Property="Grid.Margin" Value="6,10,10,10" />
+                </Style>
+            </TabControl.Resources>
+            <TabItem Header="Home">
+                <Grid Style="{StaticResource tabGrids}"/>
+            </TabItem>
+            <TabItem Header="Query">
+                <Grid Style="{StaticResource tabGrids}"/>
+            </TabItem>
+            <TabItem Header="Mapping Generator" Height="155" Margin="0,0,0,0" FontWeight="Bold">
+                <Grid Style="{StaticResource tabGrids}"/>
+            </TabItem>
+            <TabItem Header="Ontology Merger" Height="159" Margin="0,0,0,-23">
+                <Grid Style="{StaticResource tabGrids}"/>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>
