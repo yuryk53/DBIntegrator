@@ -1,12 +1,20 @@
-﻿<Window x:Class="DBIntegrator.MainWindow"
+﻿<ribbon:RibbonWindow
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DBIntegrator"
+        xmlns:Custom="http://schemas.microsoft.com/winfx/2006/xaml/presentation/ribbon" x:Class="DBIntegrator.MainWindow"
+        xmlns:ribbon="clr-namespace:Microsoft.Windows.Controls.Ribbon;assembly=RibbonControlsLibrary"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
-</Window>
+        Title="DBIntegrator - Main" Height="549.187" Width="829.471">
+    <DockPanel>
+
+        <Custom:Ribbon x:Name="ribbon" HorizontalAlignment="Left" VerticalAlignment="Top" Width="821">
+            <Custom:RibbonTab Header="Sparql Query Editor" HorizontalAlignment="Left" Height="88" VerticalAlignment="Top" Width="819"/>
+            <Custom:RibbonTab Header="Mapping Generator" HorizontalAlignment="Left" Height="88" VerticalAlignment="Top" Width="819"/>
+            <Custom:RibbonTab Header="Ontology Merger" HorizontalAlignment="Left" Height="88" VerticalAlignment="Top" Width="819"/>
+        </Custom:Ribbon>
+
+    </DockPanel>
+</ribbon:RibbonWindow>
