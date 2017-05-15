@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DBIntegrator"
         mc:Ignorable="d"
-        Title="MainWindow" Height="589" Width="1157.6">
+        Title="Data Integrator - Main" Height="589" Width="1157.6" MinWidth="800" MinHeight="200">
     <Window.Effect>
         <DropShadowEffect Opacity="0.5"/>
     </Window.Effect>
@@ -93,6 +93,35 @@
                           ShowsPreview="True"
                           Height="5"
                        />
+                    <Label x:Name="label" Content="Your query:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"/>
+                    <RichTextBox Grid.Row="0" Grid.Column="0" x:Name="queryRichTBox" Margin="10,29,10,10" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                        <FlowDocument>
+                            <Paragraph>
+                                SELECT ...
+                                <LineBreak/>
+                                # query pattern
+                                <LineBreak/>
+                                WHERE {
+                                <LineBreak/>
+                                ...
+                                <LineBreak/>
+                                }
+                                <LineBreak/>
+                                # query modifiers
+                                <LineBreak/>
+                                ORDER BY ...
+                            </Paragraph>
+                        </FlowDocument>
+                    </RichTextBox>
+                    <Expander x:Name="expander" Header="Settings" Margin="0,4,10,10" HorizontalAlignment="Right" Width="351">
+                        <Grid Background="#FFE5E5E5" ClipToBounds="True">
+                            <Label x:Name="label1" Content="Ontology path:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                            <TextBox x:Name="txtOntoPath" HorizontalAlignment="Left" Height="23" Margin="10,39,0,0" TextWrapping="Wrap" Text="C:\ontology.owl" VerticalAlignment="Top" Width="329"/>
+                            <Button x:Name="btnBrowseOntology" Content="Browse" HorizontalAlignment="Left" Margin="216,67,0,0" VerticalAlignment="Top" Width="123"/>
+                        </Grid>
+                    </Expander>
+                    <DataGrid x:Name="resultsQueryDataGrid" Margin="10" Grid.Row="2"/>
+                    <Button x:Name="btnExecuteQuery" Content="Execute" Margin="158,3,0,0" VerticalAlignment="Top" Height="23" HorizontalAlignment="Left" Width="84"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Mapping Generator" Height="155" Margin="0,0,0,0" FontWeight="Bold">
