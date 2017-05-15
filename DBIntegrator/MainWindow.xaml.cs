@@ -91,5 +91,10 @@ namespace DBIntegrator
                 this.txtOntoPath.Text = openDlg.FileName;
             }
         }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            //Properties.Settings.Default
+        }
     }
 }

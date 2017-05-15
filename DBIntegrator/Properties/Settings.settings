@@ -1,7 +1,21 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="DBIntegrator.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="db1ConnString" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Data Source = ASUS\SQLEXPRESS; Initial Catalog = KMSv1; Integrated Security = True</Value>
+    </Setting>
+    <Setting Name="db2ConnString" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Data Source = ASUS\SQLEXPRESS; Initial Catalog = LMSv1; Integrated Security = True</Value>
+    </Setting>
+    <Setting Name="db1URI" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://www.example.org/KMS/</Value>
+    </Setting>
+    <Setting Name="db2URI" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://www.example.org/LMS/</Value>
+    </Setting>
+    <Setting Name="ontologyPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\\</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

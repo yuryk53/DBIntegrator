@@ -8,22 +8,80 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DBIntegrator.Properties
-{
-
-
+namespace DBIntegrator.Properties {
+    
+    
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "11.0.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
-    {
-
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
-
-        public static Settings Default
-        {
-            get
-            {
+        
+        public static Settings Default {
+            get {
                 return defaultInstance;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source = ASUS\\SQLEXPRESS; Initial Catalog = KMSv1; Integrated Security = Tru" +
+            "e")]
+        public string db1ConnString {
+            get {
+                return ((string)(this["db1ConnString"]));
+            }
+            set {
+                this["db1ConnString"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source = ASUS\\SQLEXPRESS; Initial Catalog = LMSv1; Integrated Security = Tru" +
+            "e")]
+        public string db2ConnString {
+            get {
+                return ((string)(this["db2ConnString"]));
+            }
+            set {
+                this["db2ConnString"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://www.example.org/KMS/")]
+        public string db1URI {
+            get {
+                return ((string)(this["db1URI"]));
+            }
+            set {
+                this["db1URI"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://www.example.org/LMS/")]
+        public string db2URI {
+            get {
+                return ((string)(this["db2URI"]));
+            }
+            set {
+                this["db2URI"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\\\")]
+        public string ontologyPath {
+            get {
+                return ((string)(this["ontologyPath"]));
+            }
+            set {
+                this["ontologyPath"] = value;
             }
         }
     }

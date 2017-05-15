@@ -2,8 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:DBIntegrator"
+             xmlns:properties="clr-namespace:DBIntegrator.Properties"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <properties:Settings x:Key="Settings" />
     </Application.Resources>
 </Application>
