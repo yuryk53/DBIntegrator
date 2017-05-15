@@ -16,6 +16,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using VDS.RDF.Query;
 
+using System.IO;
+using Microsoft.Win32;
+
 namespace DBIntegrator
 {
     /// <summary>
@@ -66,14 +69,27 @@ namespace DBIntegrator
             //    qProcessor.ExecuteSparql(@" SELECT *
             //                            WHERE { ?subj ?pred <http://www.example.org/FEDERATED/User/KMS.Id_User.95>.}");
 
-            SparqlResultSet results = qProcessor.ExecuteSparql(query);
+            try {
+                SparqlResultSet results = qProcessor.ExecuteSparql(query);
+                DataTable resultDt = qProcessor.ConvertSparqlResultSetToDataTable(results);
 
-            DataTable resultDt = qProcessor.ConvertSparqlResultSetToDataTable(results);
-
-            this.resultsQueryDataGrid.DataContext = resultDt.DefaultView;
-
+                this.resultsQueryDataGrid.DataContext = resultDt.DefaultView;
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error executing query!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
-        
+        private void btnBrowseOntology_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openDlg = new OpenFileDialog();
+            openDlg.Filter = "Ontology Files|*.owl";
+
+            if(openDlg.ShowDialog() == true)
+            {
+                this.txtOntoPath.Text = openDlg.FileName;
+            }
+        }
     }
 }
