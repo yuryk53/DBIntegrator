@@ -17,5 +17,14 @@
     <Setting Name="ontologyPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\\</Value>
     </Setting>
+    <Setting Name="mapGenConnString" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="mapGenDbURI" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="mapGenIncludeViews" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

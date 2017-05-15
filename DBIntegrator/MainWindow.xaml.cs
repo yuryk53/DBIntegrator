@@ -18,6 +18,9 @@ using VDS.RDF.Query;
 
 using System.IO;
 using Microsoft.Win32;
+using VDS.RDF.Ontology;
+using MappingGenerator;
+using VDS.RDF;
 
 namespace DBIntegrator
 {
@@ -95,6 +98,14 @@ namespace DBIntegrator
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Properties.Settings.Default.Save();
+        }
+
+        private void btnGenerateOntology_Click(object sender, RoutedEventArgs e)
+        {
+            DBSemanticsGenerator generator = new DBSemanticsGenerator(@"Data Source=ASUS\SQLEXPRESS;Initial Catalog=LMSv1;Integrated Security=True");
+            generator.GenerateOntologyFromDB("LMSv1", "xmlns: lms =\"http://www.example.org/LMS/\"", "LMSv1.owl");
+            OntologyGraph gLMS = new OntologyGraph();
+            gLMS.LoadFromFile("LMSv1.owl");
         }
     }
 }

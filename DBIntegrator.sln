@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBIntegrator", "DBIntegrato
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPARQLtoSQL", "..\SPARQLtoSQL\SPARQLtoSQL\SPARQLtoSQL.csproj", "{518EE818-EC5E-4E78-B40B-DD89ED7C25A8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MappingGenerator", "..\..\..\Code\MappingGenerator\MappingGenerator\MappingGenerator.csproj", "{87D6AB79-0A21-47C2-A127-C3E560CB03CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{518EE818-EC5E-4E78-B40B-DD89ED7C25A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{518EE818-EC5E-4E78-B40B-DD89ED7C25A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{518EE818-EC5E-4E78-B40B-DD89ED7C25A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87D6AB79-0A21-47C2-A127-C3E560CB03CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87D6AB79-0A21-47C2-A127-C3E560CB03CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87D6AB79-0A21-47C2-A127-C3E560CB03CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87D6AB79-0A21-47C2-A127-C3E560CB03CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

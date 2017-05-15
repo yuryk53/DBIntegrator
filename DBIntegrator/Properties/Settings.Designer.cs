@@ -84,5 +84,41 @@ namespace DBIntegrator.Properties {
                 this["ontologyPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string mapGenConnString {
+            get {
+                return ((string)(this["mapGenConnString"]));
+            }
+            set {
+                this["mapGenConnString"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string mapGenDbURI {
+            get {
+                return ((string)(this["mapGenDbURI"]));
+            }
+            set {
+                this["mapGenDbURI"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool mapGenIncludeViews {
+            get {
+                return ((bool)(this["mapGenIncludeViews"]));
+            }
+            set {
+                this["mapGenIncludeViews"] = value;
+            }
+        }
     }
 }
