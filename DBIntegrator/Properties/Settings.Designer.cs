@@ -120,5 +120,17 @@ namespace DBIntegrator.Properties {
                 this["mapGenIncludeViews"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string mapGenDbName {
+            get {
+                return ((string)(this["mapGenDbName"]));
+            }
+            set {
+                this["mapGenDbName"] = value;
+            }
+        }
     }
 }

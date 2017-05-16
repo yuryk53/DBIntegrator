@@ -102,10 +102,106 @@ namespace DBIntegrator
 
         private void btnGenerateOntology_Click(object sender, RoutedEventArgs e)
         {
-            DBSemanticsGenerator generator = new DBSemanticsGenerator(@"Data Source=ASUS\SQLEXPRESS;Initial Catalog=LMSv1;Integrated Security=True");
-            generator.GenerateOntologyFromDB("LMSv1", "xmlns: lms =\"http://www.example.org/LMS/\"", "LMSv1.owl");
-            OntologyGraph gLMS = new OntologyGraph();
-            gLMS.LoadFromFile("LMSv1.owl");
+            SaveFileDialog saveDlg = new SaveFileDialog();
+            saveDlg.Filter = "Ontology Files|*.owl";
+            saveDlg.FileName = this.txtDbName_MapGen.Text + ".owl"; //proposed file name
+
+            if (saveDlg.ShowDialog() == true)
+            {
+                DBSemanticsGenerator generator = new DBSemanticsGenerator(this.txtConnString_MapGen.Text);
+                IGraph g = generator.GenerateOntologyFromDB(this.txtDbName_MapGen.Text,
+                                                 $"xmlns: {this.txtPrefix_MapGen.Text} =\"{this.txtDBURI_MapGen.Text}\"", saveDlg.FileName);
+
+                OntologyGraph ontologyGraph = g as OntologyGraph;
+
+                this.ontologyTreeView.Items.Clear();
+                TreeViewItem thingItem = new TreeViewItem() { Header = "Thing" };
+
+                foreach(var oclass in ontologyGraph.AllClasses)
+                {
+                    TreeViewItem classItem = GetTreeViewItem(oclass.ToString(), OntologyObjectType.CLASS);
+                    
+
+                    //add DataType properties
+                    List<Triple> classProps = ontologyGraph.GetTriplesWithPredicateObject(ontologyGraph.CreateUriNode("rdfs:domain"), ontologyGraph.CreateUriNode(new Uri(oclass.ToString()))).ToList();
+                    classProps.RemoveAll(t => ontologyGraph.OwlObjectProperties.Where(p => p.ToString() == t.Subject.ToString()).FirstOrDefault() != null);
+
+                    foreach(var dtTriple in classProps)
+                    {
+                        classItem.Items.Add(GetTreeViewItem(dtTriple.Subject.ToString(), OntologyObjectType.DATATYPE_PROPERTY));
+                    }
+
+                    //add Object properties
+                    var objectProps = ontologyGraph.OwlObjectProperties.Where(p => p.Domains.Contains(oclass));
+                    foreach(var objProp in objectProps)
+                    {
+                        classItem.Items.Add(GetTreeViewItem(objProp.ToString(), OntologyObjectType.OBJECT_PROPERTY));
+                    }
+
+                    thingItem.Items.Add(classItem);
+
+                }
+                this.ontologyTreeView.Items.Add(thingItem);
+                
+            }
+        }
+
+        enum OntologyObjectType
+        {
+            CLASS,
+            DATATYPE_PROPERTY,
+            OBJECT_PROPERTY
+        }
+
+        private TreeViewItem GetTreeViewItem(string text, OntologyObjectType type)
+        {
+            TreeViewItem item = new TreeViewItem();
+
+            item.IsExpanded = true;
+
+            // create stack panel
+            StackPanel stack = new StackPanel();
+            stack.Orientation = Orientation.Horizontal;
+
+            string imgName = string.Empty;
+
+            switch(type)
+            {
+                case OntologyObjectType.CLASS: imgName = "ontology_class_25x25.png";
+                    break;
+                case OntologyObjectType.DATATYPE_PROPERTY:
+                    imgName = "ontology_dataTypeProperty.png";
+                    break;
+                case OntologyObjectType.OBJECT_PROPERTY:
+                    imgName = "ontology_Object.png";
+                    break;
+            }
+
+            // create Image
+            Image image = new Image();
+
+            image.Source = new BitmapImage(new Uri(@"/Images/" + imgName, UriKind.Relative));
+            //TextBlock tempTextBlock = new TextBlock();
+            //tempTextBlock.Inlines.Add(image);
+            //tempTextBlock.Inlines.Add(text);
+            //item.Header = tempTextBlock;
+            image.Width = 15;
+            image.Height = 15;
+
+            //return item;
+
+            // Label
+            Label lbl = new Label();
+            lbl.Content = text;
+
+
+            // Add into stack
+            stack.Children.Add(image);
+            stack.Children.Add(lbl);
+
+            // assign stack to header
+            item.Header = stack;
+            return item;
         }
     }
 }

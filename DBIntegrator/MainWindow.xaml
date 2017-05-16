@@ -140,17 +140,27 @@
             <TabItem Header="Mapping Generator" Height="155" Margin="0,0,0,0" FontWeight="Bold">
                 <Grid Style="{StaticResource tabGrids}">
                     <Grid HorizontalAlignment="Left" Height="571" VerticalAlignment="Top" Width="1062">
-                        <Expander Header="Settings" Margin="459,0,10,0" VerticalAlignment="Top" Height="185">
+                        <TreeView x:Name="ontologyTreeView" HorizontalAlignment="Left" Height="503" Margin="10,58,0,0" VerticalAlignment="Top" Width="538">
+                            <TreeView.ItemContainerStyle>
+                                <Style TargetType="{x:Type TreeViewItem}">
+                                    <Setter Property="IsExpanded" Value="True" />
+                                </Style>
+                            </TreeView.ItemContainerStyle>
+                        </TreeView>
+                        <Button x:Name="btnGenerateOntology" Content="Generate Ontology" HorizontalAlignment="Left" VerticalAlignment="Top" Width="167" Height="27" Margin="10,10,0,0" Click="btnGenerateOntology_Click"/>
+                        <Expander Header="Settings" Margin="459,0,10,0" VerticalAlignment="Top" Height="239">
                             <Grid Background="#FFE5E5E5">
                                 <Label Content="Database connection string:" HorizontalAlignment="Left" Margin="9,15,0,0" VerticalAlignment="Top"/>
-                                <TextBox x:Name="txtConnString1_MapGen" Text="{Binding Default.mapGenConnString, Mode=TwoWay, Source={StaticResource Settings}, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="23" Margin="9,44,0,0" VerticalAlignment="Top" Width="572" FontWeight="Normal"/>
-                                <Label Content="Database #1 Ontology URI:" HorizontalAlignment="Left" Margin="9,72,0,0" VerticalAlignment="Top"/>
-                                <TextBox x:Name="txtDB1URI_MapGen" Text="{Binding Default.mapGenDbURI, Mode=TwoWay, Source={StaticResource Settings}, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="23" Margin="201,72,0,0" VerticalAlignment="Top" Width="380" FontWeight="Normal"/>
-                                <CheckBox x:Name="chkIncludeViews" IsChecked="{Binding Source={StaticResource Settings}, Path=Default.mapGenIncludeViews}" Content="Include Views in ontology generation?" HorizontalAlignment="Left" Margin="10,128,0,0" VerticalAlignment="Top"/>
+                                <TextBox x:Name="txtConnString_MapGen" Text="{Binding Default.mapGenConnString, Mode=TwoWay, Source={StaticResource Settings}, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="23" Margin="9,44,0,0" VerticalAlignment="Top" Width="572" FontWeight="Normal"/>
+                                <Label Content="Database Ontology URI:" HorizontalAlignment="Left" Margin="9,100,0,0" VerticalAlignment="Top"/>
+                                <TextBox x:Name="txtDBURI_MapGen" Text="{Binding Default.mapGenDbURI, Mode=TwoWay, Source={StaticResource Settings}, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" Margin="201,100,0,0" VerticalAlignment="Top" Width="380" FontWeight="Normal"/>
+                                <CheckBox x:Name="chkIncludeViews" IsChecked="{Binding Default.mapGenIncludeViews, Source={StaticResource Settings}}" Content="Include Views in ontology generation?" HorizontalAlignment="Left" Margin="10,174,0,0" VerticalAlignment="Top"/>
+                                <Label x:Name="label1" Content="Database name:" HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top"/>
+                                <TextBox x:Name="txtDbName_MapGen" Text="{Binding Source={StaticResource Settings}, Path=Default.mapGenDbName}" HorizontalAlignment="Left" Height="23" Margin="131,72,0,0" VerticalAlignment="Top" Width="450"/>
+                                <Label x:Name="label2" Content="Desired RDF prefix:" HorizontalAlignment="Left" Margin="10,129,0,0" VerticalAlignment="Top"/>
+                                <TextBox x:Name="txtPrefix_MapGen" HorizontalAlignment="Left" Height="23" Margin="201,131,0,0" TextWrapping="Wrap" Text="db1" VerticalAlignment="Top" Width="380"/>
                             </Grid>
                         </Expander>
-                        <Button x:Name="btnGenerateOntology" Content="Generate Ontology" HorizontalAlignment="Left" VerticalAlignment="Top" Width="167" Height="27" Margin="10,10,0,0" Click="btnGenerateOntology_Click"/>
-                        <TreeView x:Name="treeView" HorizontalAlignment="Left" Height="503" Margin="10,58,0,0" VerticalAlignment="Top" Width="538"/>
 
                     </Grid>
                 </Grid>
