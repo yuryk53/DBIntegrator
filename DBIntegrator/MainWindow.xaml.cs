@@ -111,39 +111,75 @@ namespace DBIntegrator
                 DBSemanticsGenerator generator = new DBSemanticsGenerator(this.txtConnString_MapGen.Text);
                 IGraph g = generator.GenerateOntologyFromDB(this.txtDbName_MapGen.Text,
                                                  $"xmlns: {this.txtPrefix_MapGen.Text} =\"{this.txtDBURI_MapGen.Text}\"", saveDlg.FileName);
+                TreeViewItemOntologyInfo.SavedFileName = saveDlg.FileName;
 
                 OntologyGraph ontologyGraph = g as OntologyGraph;
+                UpdateTreeView(ontologyGraph);
 
-                this.ontologyTreeView.Items.Clear();
-                TreeViewItem thingItem = new TreeViewItem() { Header = "Thing" };
-
-                foreach(var oclass in ontologyGraph.AllClasses)
-                {
-                    TreeViewItem classItem = GetTreeViewItem(oclass.ToString(), OntologyObjectType.CLASS);
-                    
-
-                    //add DataType properties
-                    List<Triple> classProps = ontologyGraph.GetTriplesWithPredicateObject(ontologyGraph.CreateUriNode("rdfs:domain"), ontologyGraph.CreateUriNode(new Uri(oclass.ToString()))).ToList();
-                    classProps.RemoveAll(t => ontologyGraph.OwlObjectProperties.Where(p => p.ToString() == t.Subject.ToString()).FirstOrDefault() != null);
-
-                    foreach(var dtTriple in classProps)
-                    {
-                        classItem.Items.Add(GetTreeViewItem(dtTriple.Subject.ToString(), OntologyObjectType.DATATYPE_PROPERTY));
-                    }
-
-                    //add Object properties
-                    var objectProps = ontologyGraph.OwlObjectProperties.Where(p => p.Domains.Contains(oclass));
-                    foreach(var objProp in objectProps)
-                    {
-                        classItem.Items.Add(GetTreeViewItem(objProp.ToString(), OntologyObjectType.OBJECT_PROPERTY));
-                    }
-
-                    thingItem.Items.Add(classItem);
-
-                }
-                this.ontologyTreeView.Items.Add(thingItem);
-                
             }
+        }
+
+        private void UpdateTreeView(OntologyGraph ontologyGraph)
+        {
+            this.ontologyTreeView.Items.Clear();
+            TreeViewItem thingItem = new TreeViewItem() { Header = "Thing" };
+
+            foreach (var oclass in ontologyGraph.AllClasses)
+            {
+                TreeViewItem classItem = GetTreeViewItem(oclass.ToString(), OntologyObjectType.CLASS);
+                classItem.Tag = new TreeViewItemOntologyInfo
+                {
+                    OntologyGraph = ontologyGraph,
+                    Type = OntologyObjectType.CLASS,
+                    URI = oclass.ToString()
+                };
+
+                //add DataType properties
+                List<Triple> classProps = ontologyGraph.GetTriplesWithPredicateObject(ontologyGraph.CreateUriNode("rdfs:domain"), ontologyGraph.CreateUriNode(new Uri(oclass.ToString()))).ToList();
+                classProps.RemoveAll(t => ontologyGraph.OwlObjectProperties.Where(p => p.ToString() == t.Subject.ToString()).FirstOrDefault() != null);
+
+                foreach (var dtTriple in classProps)
+                {
+                    TreeViewItem dtPropItem = GetTreeViewItem(dtTriple.Subject.ToString(), OntologyObjectType.DATATYPE_PROPERTY);
+                    dtPropItem.Tag = new TreeViewItemOntologyInfo
+                    {
+                        OntologyGraph = ontologyGraph,
+                        URI = dtTriple.Subject.ToString(),
+                        Type = OntologyObjectType.DATATYPE_PROPERTY,
+                        Domain = oclass.ToString()
+                    };
+
+                    //get range of this dataType property
+                    var tripleRange = ontologyGraph.GetTriplesWithSubjectPredicate(ontologyGraph.CreateUriNode(new Uri(dtTriple.Subject.ToString())), ontologyGraph.CreateUriNode("rdfs:range")).FirstOrDefault();
+                    if (tripleRange != null)
+                    {
+                        (dtPropItem.Tag as TreeViewItemOntologyInfo).Range = tripleRange.Object.ToString();
+                    }
+                    else (dtPropItem.Tag as TreeViewItemOntologyInfo).Range = "NO RANGE DEFINED";
+
+                    classItem.Items.Add(dtPropItem);
+                }
+
+                //add Object properties
+                var objectProps = ontologyGraph.OwlObjectProperties.Where(p => p.Domains.Contains(oclass));
+                foreach (var objProp in objectProps)
+                {
+                    TreeViewItem objPropItem = GetTreeViewItem(objProp.ToString(), OntologyObjectType.OBJECT_PROPERTY);
+                    objPropItem.Tag = new TreeViewItemOntologyInfo
+                    {
+                        URI = objProp.ToString(),
+                        Domain = oclass.ToString(),
+                        Range = string.Join("\n", objProp.Ranges),
+                        OntologyGraph = ontologyGraph,
+                        Type = OntologyObjectType.OBJECT_PROPERTY
+                    };
+                    classItem.Items.Add(objPropItem);
+                }
+
+                thingItem.Items.Add(classItem);
+
+            }
+            this.ontologyTreeView.Items.Add(thingItem);
         }
 
         enum OntologyObjectType
@@ -151,6 +187,16 @@ namespace DBIntegrator
             CLASS,
             DATATYPE_PROPERTY,
             OBJECT_PROPERTY
+        }
+
+        class TreeViewItemOntologyInfo
+        {
+            public string URI { get; set; }
+            public string Domain { get; set; }
+            public string Range { get; set; }
+            public OntologyObjectType Type { get; set; }
+            public OntologyGraph OntologyGraph { get; set; }
+            public static string SavedFileName { get; set; }
         }
 
         private TreeViewItem GetTreeViewItem(string text, OntologyObjectType type)
@@ -202,6 +248,58 @@ namespace DBIntegrator
             // assign stack to header
             item.Header = stack;
             return item;
+        }
+
+        private void ontologyTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            TreeViewItem selected = e.NewValue as TreeViewItem;
+            TreeViewItemOntologyInfo ontologyInfo = selected.Tag as TreeViewItemOntologyInfo;
+
+            if (ontologyInfo.Type == OntologyObjectType.DATATYPE_PROPERTY)
+            {
+                lblDomain.Content = ontologyInfo.Domain;
+                lblRange.Content = ontologyInfo.Range;
+                lblType.Content = "owl:DataTypeProperty";
+
+                chkIsIFP.IsEnabled = false;
+                
+            }
+            else if(ontologyInfo.Type == OntologyObjectType.OBJECT_PROPERTY)
+            {
+                chkIsIFP.IsEnabled = true;
+                lblDomain.Content = ontologyInfo.Domain;
+                lblRange.Content = ontologyInfo.Range;
+                lblType.Content = "owl:ObjectProperty";
+            }
+            else
+            { 
+                chkIsIFP.IsEnabled = false;
+            }
+        }
+
+        private void chkIsIFP_Checked(object sender, RoutedEventArgs e)
+        {
+            //add IFP property for ontology ObjectProperty
+            TreeViewItem selectedTVI = this.ontologyTreeView.SelectedItem as TreeViewItem;
+            TreeViewItemOntologyInfo ontologyInfo = selectedTVI.Tag as TreeViewItemOntologyInfo;
+
+            OntologyGraph ograph = ontologyInfo.OntologyGraph;
+            OntologyProperty oprop = ograph.OwlObjectProperties.Where(p => p.ToString() == ontologyInfo.URI).First();
+
+            INode pred = ograph.CreateUriNode("rdf:type");
+            INode obj = ograph.CreateUriNode("owl:InverseFunctionalProperty");
+            ograph.Assert(new Triple(oprop.Resource, pred, obj));
+
+            btnSaveChanges.IsEnabled = true;
+        }
+
+        private void btnSaveChanges_Click(object sender, RoutedEventArgs e)
+        {
+            TreeViewItem tvi = this.ontologyTreeView.SelectedItem as TreeViewItem;
+            OntologyGraph ograph = (tvi.Tag as TreeViewItemOntologyInfo).OntologyGraph;
+            ograph.SaveToFile(TreeViewItemOntologyInfo.SavedFileName);
+
+            btnSaveChanges.IsEnabled = false;
         }
     }
 }
