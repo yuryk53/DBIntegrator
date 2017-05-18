@@ -267,6 +267,8 @@ namespace DBIntegrator
             else if(ontologyInfo.Type == OntologyObjectType.OBJECT_PROPERTY)
             {
                 chkIsIFP.IsEnabled = true;
+                chkIsIFP.IsChecked = IsInverseFunctionalObjProp(ontologyInfo);
+
                 lblDomain.Content = ontologyInfo.Domain;
                 lblRange.Content = ontologyInfo.Range;
                 lblType.Content = "owl:ObjectProperty";
@@ -275,6 +277,18 @@ namespace DBIntegrator
             { 
                 chkIsIFP.IsEnabled = false;
             }
+        }
+
+        private bool IsInverseFunctionalObjProp(TreeViewItemOntologyInfo ontologyInfo)
+        {
+            OntologyGraph ograph = ontologyInfo.OntologyGraph;
+
+            INode pred = ograph.CreateUriNode("rdf:type");
+            INode obj = ograph.CreateUriNode("owl:InverseFunctionalProperty");
+
+            List<Triple> ifps = ograph.GetTriplesWithPredicateObject(pred, obj).ToList();
+
+            return ifps.FirstOrDefault(t => t.Subject.ToString() == ontologyInfo.URI) != null;
         }
 
         private void chkIsIFP_Checked(object sender, RoutedEventArgs e)
