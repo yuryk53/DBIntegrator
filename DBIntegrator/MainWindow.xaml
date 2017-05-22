@@ -182,7 +182,57 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Ontology Merger" Height="159" Margin="0,0,0,-23">
-                <Grid Style="{StaticResource tabGrids}"/>
+                <Grid Style="{StaticResource tabGrids}">
+                    <DataGrid x:Name="dataGridMPairs" Margin="10,10,10,0" Height="218" VerticalAlignment="Top" ColumnWidth="*">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Merged item #1"/>
+                            <DataGridTextColumn Header="Merged item #2"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <GroupBox x:Name="groupMClasses" IsEnabled="True" Header="Select merging classes" HorizontalAlignment="Left" Margin="13,264,0,0" VerticalAlignment="Top" Height="207" Width="443">
+                        <Grid Margin="0,0,-2,0">
+                            <ComboBox x:Name="comboMClass1" HorizontalAlignment="Left" Margin="120,26,0,0" VerticalAlignment="Top" Width="285"/>
+                            <ComboBox x:Name="comboMClass2" HorizontalAlignment="Left" Margin="120,78,0,0" VerticalAlignment="Top" Width="285"/>
+                            <Label Content="Class #1:" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top"/>
+                            <Label Content="Class #2:" HorizontalAlignment="Left" Margin="10,74,0,0" VerticalAlignment="Top"/>
+                            <Button x:Name="btnAddMClasses" Content="Add merging pair!" HorizontalAlignment="Left" Margin="256,142,0,0" VerticalAlignment="Top" Width="157" Height="26" Click="btnAddMClasses_Click">
+                                <Button.Triggers>
+                                    <EventTrigger RoutedEvent="Button.Click">
+                                        <EventTrigger.Actions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation From="0.8" To="1" Duration="0:0:0:0.2"
+                                                		Storyboard.TargetName="arrowImageRotate"
+                                                		Storyboard.TargetProperty="(ScaleTransform.ScaleX)" />
+                                                    <DoubleAnimation From="0.8" To="1" Duration="0:0:0:0.2"
+                                                		Storyboard.TargetName="arrowImageRotate"
+                                                		Storyboard.TargetProperty="(ScaleTransform.ScaleY)" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger.Actions>
+                                    </EventTrigger>
+                                </Button.Triggers>
+                            </Button>
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox x:Name="groupMProps" IsEnabled="{Binding ElementName=groupMClasses, Path=IsEnabled, Converter={StaticResource invertBoolConverter}}" Header="Select merging properties for classes" HorizontalAlignment="Left" Margin="592,264,0,0" VerticalAlignment="Top" Height="207" Width="460">
+                        <Grid Margin="0">
+                            <ComboBox x:Name="comboMProp1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="326" Margin="114,22,0,0"/>
+                            <Label Content="Property #1:" HorizontalAlignment="Left" Margin="10,22,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="comboMProp2" HorizontalAlignment="Left" Margin="114,68,0,0" VerticalAlignment="Top" Width="324"/>
+                            <Label Content="Property #2:" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top"/>
+                            <Button x:Name="btnAddMProps" Content="Add merging pair!" HorizontalAlignment="Left" Margin="281,144,0,0" VerticalAlignment="Top" Width="157" Click="btnAddMProps_Click"/>
+                        </Grid>
+                    </GroupBox>
+                    <Image Source="/Images/right-arrow.png" RenderTransformOrigin="0.5, 0.5" HorizontalAlignment="Left" Height="100" Margin="473,334,0,0" VerticalAlignment="Top" Width="100">
+                        <Image.RenderTransform>
+                            <ScaleTransform x:Name="arrowImageRotate" />
+
+                        </Image.RenderTransform>
+                    </Image>
+                    <Button x:Name="btnSaveMergedOntology" Content="Merge ontology and save to file" HorizontalAlignment="Left" Margin="816,504,0,0" VerticalAlignment="Top" Width="218" Height="44"/>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

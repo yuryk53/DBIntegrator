@@ -6,5 +6,6 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <properties:Settings x:Key="Settings" />
+        <local:InvertBooleanConverter x:Key="invertBoolConverter"/>
     </Application.Resources>
 </Application>

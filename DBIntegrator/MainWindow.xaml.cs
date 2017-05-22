@@ -315,5 +315,15 @@ namespace DBIntegrator
 
             btnSaveChanges.IsEnabled = false;
         }
+
+        private void btnAddMClasses_Click(object sender, RoutedEventArgs e)
+        {
+            groupMClasses.IsEnabled = false;
+        }
+
+        private void btnAddMProps_Click(object sender, RoutedEventArgs e)
+        {
+            groupMClasses.IsEnabled = true;
+        }
     }
 }
