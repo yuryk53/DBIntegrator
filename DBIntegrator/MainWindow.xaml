@@ -231,7 +231,9 @@
 
                         </Image.RenderTransform>
                     </Image>
-                    <Button x:Name="btnSaveMergedOntology" Content="Merge ontology and save to file" HorizontalAlignment="Left" Margin="816,504,0,0" VerticalAlignment="Top" Width="218" Height="44"/>
+                    <Button x:Name="btnSaveMergedOntology" Content="Merge selected items and save" HorizontalAlignment="Left" Margin="816,513,0,0" VerticalAlignment="Top" Width="218" Height="25"/>
+                    <Button x:Name="btnSemiAutomaticMerge" Content="Start semi-automatic merging!" HorizontalAlignment="Left" Margin="13,513,0,0" VerticalAlignment="Top" Width="218"/>
+                    <Button x:Name="btnAutomaticMerge" Content="Start automatic merging!" HorizontalAlignment="Left" Margin="408,513,0,0" VerticalAlignment="Top" Width="216"/>
                 </Grid>
             </TabItem>
         </TabControl>
