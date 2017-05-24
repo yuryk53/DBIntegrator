@@ -7,5 +7,6 @@
     <Application.Resources>
         <properties:Settings x:Key="Settings" />
         <local:InvertBooleanConverter x:Key="invertBoolConverter"/>
+        <local:InvertVisibilityConverter x:Key="invertVisibilityConverter"/>
     </Application.Resources>
 </Application>

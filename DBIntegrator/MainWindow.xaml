@@ -183,71 +183,85 @@
             </TabItem>
             <TabItem Header="Ontology Merger" Height="159" Margin="0,0,0,-23">
                 <Grid Style="{StaticResource tabGrids}">
-                    <DataGrid x:Name="dataGridMPairs" Margin="10,46,10,0" Height="218" VerticalAlignment="Top" ColumnWidth="*">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Merged item #1"/>
-                            <DataGridTextColumn Header="Merged item #2"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <GroupBox x:Name="groupMClasses" IsEnabled="True" Header="Select merging classes" HorizontalAlignment="Left" Margin="13,284,0,0" VerticalAlignment="Top" Height="207" Width="443">
-                        <Grid Margin="0,0,-2,0">
-                            <ComboBox x:Name="comboMClass1" HorizontalAlignment="Left" Margin="120,26,0,0" VerticalAlignment="Top" Width="285"/>
-                            <ComboBox x:Name="comboMClass2" HorizontalAlignment="Left" Margin="120,78,0,0" VerticalAlignment="Top" Width="285"/>
-                            <Label Content="Class #1:" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top"/>
-                            <Label Content="Class #2:" HorizontalAlignment="Left" Margin="10,74,0,0" VerticalAlignment="Top"/>
-                            <Button x:Name="btnAddMClasses" Content="Add merging pair!" HorizontalAlignment="Left" Margin="256,142,0,0" VerticalAlignment="Top" Width="157" Height="26" Click="btnAddMClasses_Click">
-                                <Button.Triggers>
-                                    <EventTrigger RoutedEvent="Button.Click">
-                                        <EventTrigger.Actions>
+                    <Grid x:Name="oMergerOperationGrid" Margin="0,10,0,63">
+                        <DataGrid x:Name="dataGridMPairs" Margin="10,36,10,0" Height="218" VerticalAlignment="Top" ColumnWidth="*">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Merged item #1"/>
+                                <DataGridTextColumn Header="Merged item #2"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <GroupBox x:Name="groupMClasses" IsEnabled="True" Header="Select merging classes" HorizontalAlignment="Left" Margin="10,274,0,0" VerticalAlignment="Top" Height="207" Width="443">
+                            <Grid Margin="0,0,-2,0">
+                                <ComboBox x:Name="comboMClass1" HorizontalAlignment="Left" Margin="120,26,0,0" VerticalAlignment="Top" Width="285"/>
+                                <ComboBox x:Name="comboMClass2" HorizontalAlignment="Left" Margin="120,78,0,0" VerticalAlignment="Top" Width="285"/>
+                                <Label Content="Class #1:" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top"/>
+                                <Label Content="Class #2:" HorizontalAlignment="Left" Margin="10,74,0,0" VerticalAlignment="Top"/>
+                                <Button x:Name="btnAddMClasses" Content="Add merging pair!" HorizontalAlignment="Left" Margin="256,142,0,0" VerticalAlignment="Top" Width="157" Height="26" Click="btnAddMClasses_Click">
+                                    <Button.Triggers>
+                                        <EventTrigger RoutedEvent="ButtonBase.Click">
                                             <BeginStoryboard>
                                                 <Storyboard>
                                                     <DoubleAnimation From="0.8" To="1" Duration="0:0:0:0.2"
-                                                		Storyboard.TargetName="arrowImageRotate"
-                                                		Storyboard.TargetProperty="(ScaleTransform.ScaleX)" />
+                										Storyboard.TargetName="arrowImageRotate"
+                										Storyboard.TargetProperty="(ScaleTransform.ScaleX)" />
                                                     <DoubleAnimation From="0.8" To="1" Duration="0:0:0:0.2"
-                                                		Storyboard.TargetName="arrowImageRotate"
-                                                		Storyboard.TargetProperty="(ScaleTransform.ScaleY)" />
+                										Storyboard.TargetName="arrowImageRotate"
+                										Storyboard.TargetProperty="(ScaleTransform.ScaleY)" />
                                                 </Storyboard>
                                             </BeginStoryboard>
-                                        </EventTrigger.Actions>
-                                    </EventTrigger>
-                                </Button.Triggers>
-                            </Button>
-                        </Grid>
-                    </GroupBox>
+                                        </EventTrigger>
+                                    </Button.Triggers>
+                                </Button>
+                            </Grid>
+                        </GroupBox>
 
-                    <GroupBox x:Name="groupMProps" IsEnabled="{Binding ElementName=groupMClasses, Path=IsEnabled, Converter={StaticResource invertBoolConverter}}" Header="Select merging properties for classes" HorizontalAlignment="Left" Margin="592,284,0,0" VerticalAlignment="Top" Height="207" Width="460">
-                        <Grid Margin="0">
-                            <ComboBox x:Name="comboMProp1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="326" Margin="114,22,0,0"/>
-                            <Label Content="Property #1:" HorizontalAlignment="Left" Margin="10,22,0,0" VerticalAlignment="Top"/>
-                            <ComboBox x:Name="comboMProp2" HorizontalAlignment="Left" Margin="114,68,0,0" VerticalAlignment="Top" Width="324"/>
-                            <Label Content="Property #2:" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top"/>
-                            <Button x:Name="btnAddMProps" Content="Add merging pair!" HorizontalAlignment="Left" Margin="281,144,0,0" VerticalAlignment="Top" Width="157" Click="btnAddMProps_Click"/>
-                        </Grid>
-                    </GroupBox>
-                    <Image Source="/Images/right-arrow.png" RenderTransformOrigin="0.5, 0.5" HorizontalAlignment="Left" Height="100" Margin="473,354,0,0" VerticalAlignment="Top" Width="100">
-                        <Image.RenderTransform>
-                            <ScaleTransform x:Name="arrowImageRotate" />
+                        <GroupBox x:Name="groupMProps" IsEnabled="{Binding IsEnabled, Converter={StaticResource invertBoolConverter}, ElementName=groupMClasses}" Header="Select merging properties for classes" HorizontalAlignment="Left" Margin="584,274,0,0" VerticalAlignment="Top" Height="207" Width="460">
+                            <Grid Margin="0">
+                                <ComboBox x:Name="comboMProp1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="326" Margin="114,22,0,0"/>
+                                <Label Content="Property #1:" HorizontalAlignment="Left" Margin="10,22,0,0" VerticalAlignment="Top"/>
+                                <ComboBox x:Name="comboMProp2" HorizontalAlignment="Left" Margin="114,68,0,0" VerticalAlignment="Top" Width="324"/>
+                                <Label Content="Property #2:" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top"/>
+                                <Button x:Name="btnAddMProps" Content="Add merging pair!" HorizontalAlignment="Left" Margin="281,144,0,0" VerticalAlignment="Top" Width="157" Click="btnAddMProps_Click"/>
+                            </Grid>
+                        </GroupBox>
+                        <Image Source="/Images/right-arrow.png" RenderTransformOrigin="0.5, 0.5" HorizontalAlignment="Left" Height="100" Margin="463,344,0,0" VerticalAlignment="Top" Width="100">
+                            <Image.RenderTransform>
+                                <ScaleTransform x:Name="arrowImageRotate" />
 
-                        </Image.RenderTransform>
-                    </Image>
-                    <Button x:Name="btnSaveMergedOntology" Content="Merge selected items and save" HorizontalAlignment="Left" Margin="816,513,0,0" VerticalAlignment="Top" Width="218" Height="25"/>
-                    <Button x:Name="btnSemiAutomaticMerge" Content="Start semi-automatic merging!" HorizontalAlignment="Left" Margin="13,513,0,0" VerticalAlignment="Top" Width="218"/>
-                    <Button x:Name="btnAutomaticMerge" Content="Start automatic merging!" HorizontalAlignment="Left" Margin="408,513,0,0" VerticalAlignment="Top" Width="216"/>
-                    <Expander Header="Settings" HorizontalAlignment="Left" Margin="662,10,0,0" VerticalAlignment="Top" Height="177" Width="372">
-                        <Grid Background="#FFE5E5E5" Height="154" Margin="0">
-                            <Grid.Effect>
-                                <DropShadowEffect/>
-                            </Grid.Effect>
-                            <Label Content="Ontology #1:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                            <Label Content="Ontology #2:" HorizontalAlignment="Left" Margin="10,44,0,0" VerticalAlignment="Top"/>
-                            
-                            <Button x:Name="btnOpenOntology1" Content="Open ontology #1" HorizontalAlignment="Left" Margin="10,83,0,0" VerticalAlignment="Top" Width="152"/>
-                            <Button x:Name="btnOpenOntology2" Content="Open ontology #2" HorizontalAlignment="Left" Margin="212,83,0,0" VerticalAlignment="Top" Width="148"/>
-                            <Label x:Name="lblOntologyName1" Content="[not opened yet]" HorizontalAlignment="Left" Margin="116,10,0,0" VerticalAlignment="Top" Width="244"/>
-                            <Label x:Name="lblOntologyName2" Content="[not opened yet]" HorizontalAlignment="Left" Margin="116,44,0,0" VerticalAlignment="Top" Width="244"/>
-                        </Grid>
-                    </Expander>
+                            </Image.RenderTransform>
+                        </Image>
+                        <Expander Header="Settings" HorizontalAlignment="Left" Margin="582,0,0,0" VerticalAlignment="Top" Height="325" Width="442">
+                            <Grid Background="#FFE5E5E5" Height="294" Margin="0">
+                                <Grid.Effect>
+                                    <DropShadowEffect/>
+                                </Grid.Effect>
+                                <Label Content="Ontology #1:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                                <Label Content="Ontology #2:" HorizontalAlignment="Left" Margin="10,44,0,0" VerticalAlignment="Top"/>
+
+                                <Button x:Name="btnOpenOntology1" Content="Open ontology #1" HorizontalAlignment="Left" Margin="10,119,0,0" VerticalAlignment="Top" Width="152" Click="btnOpenOntology1_Click"/>
+                                <Button x:Name="btnOpenOntology2" Content="Open ontology #2" HorizontalAlignment="Left" Margin="212,119,0,0" VerticalAlignment="Top" Width="148" Click="btnOpenOntology2_Click"/>
+                                <TextBox x:Name="txtOntologyName1" Text="{Binding Default.mergedOntology1Path, Mode=TwoWay, Source={StaticResource Settings}, UpdateSourceTrigger=PropertyChanged}" Margin="116,10,10,0" VerticalAlignment="Top"/>
+                                <TextBox x:Name="txtOntologyName2" Text="{Binding Default.mergedOntology2Path, Mode=TwoWay, Source={StaticResource Settings}, UpdateSourceTrigger=PropertyChanged}" Margin="116,44,10,0" VerticalAlignment="Top"/>
+                                <Label Content="Ontology Merger Engine:" HorizontalAlignment="Left" Margin="10,78,0,0" VerticalAlignment="Top" Width="173"/>
+                                <ComboBox x:Name="comboOntologyMergeEngine" Margin="188,82,10,0" VerticalAlignment="Top"/>
+                                <Label x:Name="label3" Content="Merge threshold for classes:" HorizontalAlignment="Left" Margin="10,164,0,0" VerticalAlignment="Top"/>
+                                <Label x:Name="label4" Content="Merge threshold for properties:" HorizontalAlignment="Left" Margin="10,198,0,0" VerticalAlignment="Top"/>
+                                <Slider x:Name="sliderThresholdClasses" Margin="234,164,0,0" VerticalAlignment="Top" Minimum="0.1" Maximum="1.0" Value="0.6" HorizontalAlignment="Left" Width="152"/>
+                                <Slider x:Name="sliderThresholdProperties" Margin="234,198,54,0" VerticalAlignment="Top" Minimum="0.1" Maximum="1.0" Value="0.6"/>
+                                <Label Content="{Binding ElementName=sliderThresholdClasses, Path=Value}" HorizontalAlignment="Left" Margin="391,164,0,0" VerticalAlignment="Top" Width="39"/>
+                                <Label Content="{Binding ElementName=sliderThresholdProperties, Path=Value}" HorizontalAlignment="Left" Margin="391,193,0,0" VerticalAlignment="Top" Width="39"/>
+                            </Grid>
+                        </Expander>
+                    </Grid>
+                    <Grid x:Name="mergerOperationButtons" Margin="13,513,10,23">
+                        <Button x:Name="btnSaveMergedOntology" Content="Merge selected items and save" HorizontalAlignment="Left" Margin="803,0,0,0" VerticalAlignment="Top" Width="218" Height="25"/>
+                        <Button x:Name="btnSemiAutomaticMerge" Content="Start semi-automatic merging!" HorizontalAlignment="Left" VerticalAlignment="Top" Width="218"/>
+                        <Button x:Name="btnAutomaticMerge" Content="Start automatic merging!" HorizontalAlignment="Left" Margin="395,0,0,0" VerticalAlignment="Top" Width="216" Click="btnAutomaticMerge_Click"/>
+                    </Grid>
+                    <Grid Background="LightGray" Visibility="{Binding Visibility, Converter={StaticResource invertVisibilityConverter}, ElementName=oMergerOperationGrid}">
+                        <Label x:Name="txtMergeStage" HorizontalContentAlignment="Center" Content="Stage 1/2: Matching two ontologies" Margin="290,216,272,318" Width="500" />
+                        <ProgressBar x:Name="progressBarMerge" HorizontalAlignment="Left" Height="25" Margin="254,253,0,0" VerticalAlignment="Top" Width="566" Minimum="0" Maximum="100"/>
+                    </Grid>
                 </Grid>
             </TabItem>
         </TabControl>

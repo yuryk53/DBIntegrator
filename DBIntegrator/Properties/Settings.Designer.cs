@@ -132,5 +132,29 @@ namespace DBIntegrator.Properties {
                 this["mapGenDbName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\\\")]
+        public string mergedOntology1Path {
+            get {
+                return ((string)(this["mergedOntology1Path"]));
+            }
+            set {
+                this["mergedOntology1Path"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\\\")]
+        public string mergedOntology2Path {
+            get {
+                return ((string)(this["mergedOntology2Path"]));
+            }
+            set {
+                this["mergedOntology2Path"] = value;
+            }
+        }
     }
 }

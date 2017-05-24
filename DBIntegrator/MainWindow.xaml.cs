@@ -30,6 +30,7 @@ namespace DBIntegrator
     public partial class MainWindow : Window
     {
         List<Type> dbLoaderTypes = new List<Type>();
+        List<Type> ontologyMergers = new List<Type>();
 
         public MainWindow()
         {
@@ -54,6 +55,22 @@ namespace DBIntegrator
             this.comboDB1Loader.SelectedIndex = 0;
             this.comboDB2Loader.SelectedIndex = 0;
             //------------END->get all available DB Loaders------------
+
+            //get all available ontology mergers
+            interfaceType = typeof(IOntologyMerger);
+            classes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(interfaceType.IsAssignableFrom).ToList();
+            classes.Remove(typeof(IOntologyMerger));
+
+            foreach (var t in classes)
+            {
+                this.ontologyMergers.Add(t);
+                
+                this.comboOntologyMergeEngine.Items.Add(t.Name);
+            }
+            this.comboOntologyMergeEngine.SelectedIndex = 0;
+            //------------END->get all ontology mergers------------
         }
 
         private void btnExecuteQuery_Click(object sender, RoutedEventArgs e)
@@ -325,5 +342,129 @@ namespace DBIntegrator
         {
             groupMClasses.IsEnabled = true;
         }
+
+        #region Ontology Merger Tab
+        private string ShowOpenOntologyDialog() //returns ontology path
+        {
+            OpenFileDialog openDlg = new OpenFileDialog();
+            openDlg.Filter = "Ontology Files|*.owl";
+
+            if (openDlg.ShowDialog() == true)
+            {
+                return openDlg.FileName;
+            }
+            return null;
+        }
+
+        private string ShowSaveOntologyDialog()
+        {
+            SaveFileDialog saveDlg = new SaveFileDialog();
+            saveDlg.Filter = "Ontology Files|*.owl";
+            string ontology1Name = System.IO.Path.GetFileNameWithoutExtension(this.txtOntologyName1.Text);
+            string ontology2Name = System.IO.Path.GetFileNameWithoutExtension(this.txtOntologyName2.Text);
+            saveDlg.FileName = $"Merged_{ontology1Name}_{ontology2Name}.owl"; //proposed file name
+
+            if (saveDlg.ShowDialog() == true)
+            {
+                return saveDlg.FileName;
+            }
+            else
+                return null;
+        }
+
+        private void btnOpenOntology1_Click(object sender, RoutedEventArgs e)
+        {
+            string ontologyPath = ShowOpenOntologyDialog();
+            if(ontologyPath!= null)
+            {
+                this.txtOntologyName1.Text = ontologyPath;
+            }
+        }
+        
+
+        private void btnOpenOntology2_Click(object sender, RoutedEventArgs e)
+        {
+            string ontologyPath = ShowOpenOntologyDialog();
+            if (ontologyPath != null)
+            {
+                this.txtOntologyName2.Text = ontologyPath;
+            }
+        }
+        
+
+        private async void btnAutomaticMerge_Click(object sender, RoutedEventArgs e)
+        {
+            if(!File.Exists(this.txtOntologyName1.Text))
+            {
+                MessageBox.Show("Ontology #1 file doesn't exist! Check settings section.", "Error! File not found", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            if(!File.Exists(this.txtOntologyName2.Text))
+            {
+                MessageBox.Show("Ontology #2 file doesn't exist! Check settings section.", "Error! File not found", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            //create instance of selected in settings merger engine:
+            Type mergeEngine = this.ontologyMergers[this.comboOntologyMergeEngine.SelectedIndex];
+            Type ioMergerInterface = mergeEngine.GetInterface("IOntologyMerger");
+            if(ioMergerInterface == null)
+            {
+                MessageBox.Show("Selected merger engine does not implement IOntologyMerger -> automatic merging is not supported!",
+                     "Error! Automatic merging is not supported", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            IOntologyMerger merger = Activator.CreateInstance(mergeEngine) as IOntologyMerger;
+            if(merger== null)
+            {
+                MessageBox.Show("Unable to create merger engine instance!", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            OntologyGraph gLMS = new OntologyGraph();
+            gLMS.LoadFromFile(this.txtOntologyName1.Text);
+
+            OntologyGraph gKMS = new OntologyGraph();
+            gKMS.LoadFromFile(this.txtOntologyName2.Text);
+
+            merger.Initialize(gLMS, gKMS);
+
+            IProgress<double> progress = new Progress<double>(pValue=>UpdateProgressBar((int)(pValue*100)));
+
+
+            this.oMergerOperationGrid.Visibility = Visibility.Hidden;
+            this.mergerOperationButtons.IsEnabled = false;
+
+            double thresholdClass = this.sliderThresholdClasses.Value;
+            double thresholdProperty = this.sliderThresholdProperties.Value;
+            IGraph mergedIGraph = await Task.Factory.StartNew<IGraph>(() => {
+                                        return  merger.MergeTwoOntologies(o1: gKMS,
+                                                                          o2: gLMS,
+                                                                          classThreshold: thresholdClass,
+                                                                          propertyThreshold: thresholdProperty,
+                                                                          progress: progress);
+            });
+
+            OntologyGraph merged = mergedIGraph as OntologyGraph;
+
+            string savePath = ShowSaveOntologyDialog();
+            if(savePath!= null)
+            {
+                merged.SaveToFile(savePath);
+            }
+
+            this.oMergerOperationGrid.Visibility = Visibility.Visible; //restore visibility of operation grid
+            this.mergerOperationButtons.IsEnabled = true;
+        }
+
+        private void UpdateProgressBar(int percent)
+        {
+            if(this.progressBarMerge.Value > 80 && percent<10)  //previous value is 100% and now it's 0 -> stage II
+            {
+                this.txtMergeStage.Content = "Stage 2/2: Generating federated schema";
+            }
+            this.progressBarMerge.Value = percent;
+        }
+        #endregion
     }
 }
