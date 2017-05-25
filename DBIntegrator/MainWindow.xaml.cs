@@ -73,6 +73,14 @@ namespace DBIntegrator
             //------------END->get all ontology mergers------------
         }
 
+        private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(this.ontoMergerTab.IsSelected)
+            {
+                TabOntologyMerger_Selected();
+            }
+        }
+
         private void btnExecuteQuery_Click(object sender, RoutedEventArgs e)
         {
             string query = new TextRange(this.queryRichTBox.Document.ContentStart, this.queryRichTBox.Document.ContentEnd).Text;
@@ -465,6 +473,112 @@ namespace DBIntegrator
             }
             this.progressBarMerge.Value = percent;
         }
+        
+
+        private void TabOntologyMerger_Selected()
+        {
+            //populate classes / properties combo boxes
+            if (File.Exists(this.txtOntologyName1.Text) && File.Exists(this.txtOntologyName2.Text))
+            {
+                OntologyGraph ontology = null;
+                if (this.comboMClass1.HasItems==false || this.comboMProp1.HasItems == false)
+                {
+                    ontology = new OntologyGraph();
+                    ontology.LoadFromFile(this.txtOntologyName1.Text);
+
+                    foreach(OntologyClass oclass in ontology.AllClasses)
+                    {
+                        this.comboMClass1.Items.Add(oclass.ToString());
+                    }
+                    this.comboMClass1.SelectedIndex = 0;
+
+
+                    List<string> propertiesList = new List<string>();
+                    foreach(OntologyProperty objectProp in ontology.OwlObjectProperties)    //add object properties
+                    {
+                        propertiesList.Add(objectProp.ToString());
+                    }
+
+                    IEnumerable<Triple> dataTypePropTriples = ontology.GetTriplesWithPredicateObject(ontology.CreateUriNode("rdf:type"),
+                        ontology.CreateUriNode("owl:DataTypeProperty"));
+
+                    foreach(var triple in dataTypePropTriples)
+                    {
+                        propertiesList.Add(triple.Subject.ToString());
+                    }
+                    this.comboMProp1.ItemsSource = propertiesList;
+                    this.comboMProp1.SelectedIndex = 0;
+                }
+
+                if(this.comboMClass2.HasItems==false || this.comboMProp2.HasItems == false)
+                {
+                    ontology = new OntologyGraph();
+                    ontology.LoadFromFile(this.txtOntologyName2.Text);
+
+                    foreach (OntologyClass oclass in ontology.AllClasses)
+                    {
+                        this.comboMClass2.Items.Add(oclass.ToString());
+                    }
+                    this.comboMClass2.SelectedIndex = 0;
+
+                    foreach (OntologyProperty objectProp in ontology.OwlObjectProperties)    //add object properties
+                    {
+                        this.comboMProp2.Items.Add(objectProp.ToString());
+                    }
+
+                    IEnumerable<Triple> dataTypePropTriples = ontology.GetTriplesWithPredicateObject(ontology.CreateUriNode("rdf:type"),
+                        ontology.CreateUriNode("owl:DataTypeProperty"));
+
+                    foreach (var triple in dataTypePropTriples)
+                    {
+                        this.comboMProp2.Items.Add(triple.Subject.ToString());
+                    }
+                    this.comboMProp2.SelectedIndex = 0;
+                }
+
+                //populate
+            }
+            else
+            {
+                //expand expander for user
+                this.ontologyMergerExpander.IsExpanded = true;
+            }
+
+        }
+
+        private void groupMProps_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            //filter combo boxes with properties, according to classes, selected in left-hand combo boxes
+            if (this.comboMProp1 != null)
+            {
+                if (this.groupMProps.IsEnabled)
+                {
+                    this.comboMProp1.Items.Filter = (object o) =>
+                    {
+                        string ontologyPropertyURI = (string)o;
+                        string selectedClassURI = this.comboMClass1.SelectedItem.ToString();
+                        return ontologyPropertyURI.Contains(selectedClassURI);
+                    };
+                    this.comboMProp1.SelectedIndex = 0;
+                }
+            }
+
+            //update combo box #2
+            if (this.comboMProp2 != null)
+            {
+                if (this.groupMProps.IsEnabled)
+                {
+                    this.comboMProp2.Items.Filter = (object o) =>
+                    {
+                        string ontologyPropertyURI = (string)o;
+                        string selectedClassURI = this.comboMClass2.SelectedItem.ToString();
+                        return ontologyPropertyURI.Contains(selectedClassURI);
+                    };
+                    this.comboMProp2.SelectedIndex = 0;
+                }
+            }
+        }
+
         #endregion
     }
 }

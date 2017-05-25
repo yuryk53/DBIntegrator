@@ -17,7 +17,7 @@
                 <GradientStop Color="#FFE4E4E4" Offset="1"/>
             </RadialGradientBrush>
         </Grid.Background>
-        <TabControl x:Name="tabControl" TabStripPlacement="Left" Margin="6,10,10,10" BorderThickness="3">
+        <TabControl SelectionChanged="tabControl_SelectionChanged" x:Name="tabControl" TabStripPlacement="Left" Margin="6,10,10,10" BorderThickness="3">
             <TabControl.Resources>
                 <Style TargetType="{x:Type TabItem}">
                     <Setter Property="Template">
@@ -181,7 +181,7 @@
                     <Button x:Name="btnSaveChanges" IsEnabled="False" Content="Save changes" HorizontalAlignment="Left" Margin="896,372,0,0" VerticalAlignment="Top" Width="130" Height="30" Click="btnSaveChanges_Click"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Ontology Merger" Height="159" Margin="0,0,0,-23">
+            <TabItem x:Name="ontoMergerTab" Header="Ontology Merger" Height="159" Margin="0,0,0,-23">
                 <Grid Style="{StaticResource tabGrids}">
                     <Grid x:Name="oMergerOperationGrid" Margin="0,10,0,63">
                         <DataGrid x:Name="dataGridMPairs" Margin="10,36,10,0" Height="218" VerticalAlignment="Top" ColumnWidth="*">
@@ -217,7 +217,7 @@
                                 </Grid>
                             </GroupBox>
 
-                            <GroupBox x:Name="groupMProps" IsEnabled="{Binding IsEnabled, Converter={StaticResource invertBoolConverter}, ElementName=groupMClasses}" Header="Select merging properties for classes" HorizontalAlignment="Right" Margin="574,0,0,0" VerticalAlignment="Top" Height="207" Width="460">
+                            <GroupBox x:Name="groupMProps" IsEnabled="{Binding IsEnabled, Converter={StaticResource invertBoolConverter}, ElementName=groupMClasses}" Header="Select merging properties for classes" HorizontalAlignment="Right" Margin="574,0,0,0" VerticalAlignment="Top" Height="207" Width="460" IsEnabledChanged="groupMProps_IsEnabledChanged">
                                 <Grid Margin="0">
                                     <ComboBox x:Name="comboMProp1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="326" Margin="114,22,0,0"/>
                                     <Label Content="Property #1:" HorizontalAlignment="Left" Margin="10,22,0,0" VerticalAlignment="Top"/>
@@ -233,7 +233,7 @@
                                 </Image.RenderTransform>
                             </Image>
                         </Grid>
-                        <Expander Header="Settings" HorizontalAlignment="Left" Margin="582,0,0,0" VerticalAlignment="Top" Height="325" Width="442">
+                        <Expander x:Name="ontologyMergerExpander" Header="Settings" HorizontalAlignment="Left" Margin="582,0,0,0" VerticalAlignment="Top" Height="325" Width="442">
                             <Grid Background="#FFE5E5E5" Height="294" Margin="0">
                                 <Grid.Effect>
                                     <DropShadowEffect/>
@@ -242,7 +242,7 @@
                                 <Label Content="Ontology #2:" HorizontalAlignment="Left" Margin="10,44,0,0" VerticalAlignment="Top"/>
 
                                 <Button x:Name="btnOpenOntology1" Content="Open ontology #1" HorizontalAlignment="Left" Margin="10,119,0,0" VerticalAlignment="Top" Width="152" Click="btnOpenOntology1_Click"/>
-                                <Button x:Name="btnOpenOntology2" Content="Open ontology #2" HorizontalAlignment="Left" Margin="212,119,0,0" VerticalAlignment="Top" Width="148" Click="btnOpenOntology2_Click"/>
+                                <Button x:Name="btnOpenOntology2" Content="Open ontology #2" HorizontalAlignment="Right" Margin="212,119,10,0" VerticalAlignment="Top" Width="148" Click="btnOpenOntology2_Click"/>
                                 <TextBox x:Name="txtOntologyName1" Text="{Binding Default.mergedOntology1Path, Mode=TwoWay, Source={StaticResource Settings}, UpdateSourceTrigger=PropertyChanged}" Margin="116,10,10,0" VerticalAlignment="Top"/>
                                 <TextBox x:Name="txtOntologyName2" Text="{Binding Default.mergedOntology2Path, Mode=TwoWay, Source={StaticResource Settings}, UpdateSourceTrigger=PropertyChanged}" Margin="116,44,10,0" VerticalAlignment="Top"/>
                                 <Label Content="Ontology Merger Engine:" HorizontalAlignment="Left" Margin="10,78,0,0" VerticalAlignment="Top" Width="173"/>
