@@ -33,6 +33,8 @@ namespace DBIntegrator
         List<Type> dbLoaderTypes = new List<Type>();
         List<Type> ontologyMergers = new List<Type>();
 
+        OntologyMergerSettings oMergerSettings = new OntologyMergerSettings();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -404,7 +406,7 @@ namespace DBIntegrator
             {
                 pairs.Add(pair);
 
-                groupMClasses.IsEnabled = true;
+                //groupMClasses.IsEnabled = true;
             }
             else
             {
@@ -500,7 +502,7 @@ namespace DBIntegrator
 
             merger.Initialize(gLMS, gKMS);
 
-            this.txtMergeStage.Content = "Stage 1/2: Matching two ontologies";
+            this.lblMergeStage.Content = "Stage 1/2: Matching two ontologies";
             IProgress<double> progress = new Progress<double>(pValue=>UpdateProgressBar((int)(pValue*100)));
 
 
@@ -533,7 +535,7 @@ namespace DBIntegrator
         {
             if(this.progressBarMerge.Value > 80 && percent<10)  //previous value is 100% and now it's 0 -> stage II
             {
-                this.txtMergeStage.Content = "Stage 2/2: Generating federated schema";
+                this.lblMergeStage.Content = "Stage 2/2: Generating federated schema";
             }
             this.progressBarMerge.Value = percent;
         }
@@ -693,13 +695,28 @@ namespace DBIntegrator
             OntologyGraph ontology2 = new OntologyGraph();
             ontology2.LoadFromFile(this.txtOntologyName2.Text);
 
+            this.oMergerSettings = new OntologyMergerSettings
+            {
+                Ontology1 = ontology1,
+                Ontology2 = ontology2,
+                Ontology1Path = this.txtOntologyName1.Text,
+                Ontology2Path = this.txtOntologyName2.Text
+            };
+
             merger.Initialize(ontology1, ontology2);
 
             //get merge propositions for classes
             ObservableCollection<SimilarClassPropertyDescription> dataGridItems = this.dataGridMPairs.ItemsSource as ObservableCollection<SimilarClassPropertyDescription>;
             dataGridItems.Clear();
+
+            lblMergeStage.Content = "Computing merge pairs based on semantic similarity";
+            IProgress<double> progress = new Progress<double>(pValue => UpdateProgressBar((int)(pValue * 100)));
+            this.oMergerOperationGrid.Visibility = Visibility.Hidden;   //hide operator grid from user
+
             Dictionary<string, List<SimilarClassPropertyDescription>> simDict =
-                await Task.Factory.StartNew(()=>merger.GetSimilarOntologyClassesMatrix(progress: null));
+                await Task.Factory.StartNew(()=>merger.GetSimilarOntologyClassesMatrix(progress: progress));
+
+            this.oMergerOperationGrid.Visibility = Visibility.Visible; //restore operator grid
 
             //pass mergeClassPairs through threshold
             List<SimilarClassPropertyDescription> similarClasses = new List<SimilarClassPropertyDescription>();
@@ -737,6 +754,124 @@ namespace DBIntegrator
                 new XSDTypeCaster(),
                 progress: null
                 );
+        }
+
+        private void btnSaveMergedOntology_Click(object sender, RoutedEventArgs e)
+        {
+            Type mergeEngine = this.ontologyMergers[this.comboOntologyMergeEngine.SelectedIndex];
+            Type ioMergerInterface = mergeEngine.GetInterface("IOntologyMerger");
+            Type iiMergerInterface = mergeEngine.GetInterface("IInteractiveMerger");
+            if (ioMergerInterface == null || iiMergerInterface == null)
+            {
+                MessageBox.Show("Selected merger engine does not implement IOntologyMerger OR IInteractiveMerger interface!",
+                     "Error! Semi-automatic merging is not supported", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            IOntologyMerger merger = Activator.CreateInstance(mergeEngine) as IOntologyMerger;
+
+            if (merger == null)
+            {
+                MessageBox.Show("Unable to create merger engine instance!", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            OntologyGraph ontology1 = this.oMergerSettings.Ontology1;
+            if(ontology1== null)
+            {
+                ontology1 = new OntologyGraph();
+                ontology1.LoadFromFile(this.txtOntologyName1.Text);
+            }
+
+            OntologyGraph ontology2 = this.oMergerSettings.Ontology2;
+            if(ontology2== null)
+            {
+                ontology2 = new OntologyGraph();
+                ontology2.LoadFromFile(this.txtOntologyName2.Text);
+            }
+
+            merger.Initialize(ontology1, ontology2);
+
+            IInteractiveMerger iiMerger = merger as IInteractiveMerger;
+
+            ObservableCollection<SimilarClassPropertyDescription> dataGridItems = this.dataGridMPairs.ItemsSource as ObservableCollection<SimilarClassPropertyDescription>;
+            List<SimilarClassPropertyDescription> similarClasses = new List<SimilarClassPropertyDescription>();
+            List<SimilarClassPropertyDescription> similarProps = new List<SimilarClassPropertyDescription>();
+            foreach(SimilarClassPropertyDescription scpd in dataGridItems)
+            {
+                if(scpd.MergeClassRelation != MergeClassRelation.NotApplicable) //it's a class
+                {
+                    similarClasses.Add(scpd);
+                }
+                else if(scpd.MergePropRelation != MergePropertyRelation.NotApplicable) //it's a property
+                {
+                    similarProps.Add(scpd);
+                }
+            }
+
+            if(similarClasses.Count==0)
+            {
+                MessageBox.Show("There're no classes to merge! Try adding values to a table or pressing 'Compute probable merge pairs' button!", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            OntologyGraph merged = iiMerger.MergeOntologyClasses(
+                similarClasses,
+                simPair =>
+                {
+                    bool canMerge = simPair.SimilarityScore >= this.sliderThresholdClasses.Value;
+                    return canMerge;
+                },        //no user interaction here
+                propPair =>
+                {
+                    bool canMerge = propPair.SimilarityScore >= this.sliderThresholdProperties.Value;
+                    return canMerge;
+                },   //no user interaction here
+                this.sliderThresholdProperties.Value,
+                new ShortestFederatedNamesGenerator(),
+                new XSDTypeCaster(),
+                progress: null,
+                getSimilarClassPropertiesMatrixMethod:
+                    (string classUri1, string classUri2, IProgress<double> progress) =>
+                    {
+                        Dictionary<string, List<SimilarClassPropertyDescription>> simDict = new Dictionary<string, List<SimilarClassPropertyDescription>>();
+                        foreach(SimilarClassPropertyDescription scpd in similarProps)
+                        {
+                            if(scpd.ObjectName1.Contains(classUri1) && scpd.ObjectName2.Contains(classUri2))
+                            {
+                                if(!simDict.ContainsKey(scpd.ObjectName1))
+                                {
+                                    simDict.Add(scpd.ObjectName1, new List<SimilarClassPropertyDescription>());
+                                }
+                                simDict[scpd.ObjectName1].Add(scpd);
+                            }
+                            else if(scpd.ObjectName2.Contains(classUri1) && scpd.ObjectName1.Contains(classUri2))
+                            {
+                                if (!simDict.ContainsKey(scpd.ObjectName2))
+                                {
+                                    simDict.Add(scpd.ObjectName2, new List<SimilarClassPropertyDescription>());
+                                }
+                                simDict[scpd.ObjectName2].Add(scpd);
+                            }
+                        }
+                        return simDict;
+                    }
+            ) as OntologyGraph;
+
+            if(merged!= null)
+            {
+                string savePath = ShowSaveOntologyDialog();
+                merged.SaveToFile(savePath);
+            }
+            else
+            {
+                MessageBox.Show("Ontology merging failed!", "Unknown error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void btnSwitchToNextClass_Click(object sender, RoutedEventArgs e)
+        {
+            this.groupMClasses.IsEnabled = true;
         }
 
         #endregion
