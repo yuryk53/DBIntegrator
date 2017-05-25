@@ -184,11 +184,11 @@
             <TabItem x:Name="ontoMergerTab" Header="Ontology Merger" Height="159" Margin="0,0,0,-23">
                 <Grid Style="{StaticResource tabGrids}">
                     <Grid x:Name="oMergerOperationGrid" Margin="0,10,0,63">
-                        <DataGrid x:Name="dataGridMPairs" Margin="10,36,10,0" Height="218" VerticalAlignment="Top" ColumnWidth="*">
+                        <DataGrid x:Name="dataGridMPairs" ItemsSource="{Binding SimilarClassPropertyDescription}" AutoGenerateColumns="False" Margin="10,36,10,0" Height="218" VerticalAlignment="Top" ColumnWidth="*">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Merged item #1"/>
-                                <DataGridTextColumn Header="Merged item #2"/>
-                                <DataGridTextColumn Header="Similarity" Width="70"/>
+                                <DataGridTextColumn Header="Merged item #1" Binding="{Binding ObjectName1}"/>
+                                <DataGridTextColumn Header="Merged item #2" Binding="{Binding ObjectName2}"/>
+                                <DataGridTextColumn Header="Similarity" Width="70" Binding="{Binding SimilarityScore}"/>
                             </DataGrid.Columns>
                         </DataGrid>
                         <Grid Margin="10,274,10,0" Height="224" VerticalAlignment="Top">
@@ -233,7 +233,7 @@
                                 </Image.RenderTransform>
                             </Image>
                         </Grid>
-                        <Expander x:Name="ontologyMergerExpander" Header="Settings" HorizontalAlignment="Left" Margin="582,0,0,0" VerticalAlignment="Top" Height="325" Width="442">
+                        <Expander x:Name="ontologyMergerExpander" IsEnabled="{Binding ElementName=groupMClasses, Path=IsEnabled}" Header="Settings" HorizontalAlignment="Left" Margin="582,0,0,0" VerticalAlignment="Top" Height="325" Width="442">
                             <Grid Background="#FFE5E5E5" Height="294" Margin="0">
                                 <Grid.Effect>
                                     <DropShadowEffect/>

@@ -21,6 +21,7 @@ using Microsoft.Win32;
 using VDS.RDF.Ontology;
 using MappingGenerator;
 using VDS.RDF;
+using System.Collections.ObjectModel;
 
 namespace DBIntegrator
 {
@@ -77,7 +78,11 @@ namespace DBIntegrator
         {
             if(this.ontoMergerTab.IsSelected)
             {
-                TabOntologyMerger_Selected();
+                PopulateOMergerComboBoxes();
+                if(this.dataGridMPairs.ItemsSource == null)
+                {
+                    this.dataGridMPairs.ItemsSource = new ObservableCollection<SimilarClassPropertyDescription>();
+                }
             }
         }
 
@@ -341,14 +346,70 @@ namespace DBIntegrator
             btnSaveChanges.IsEnabled = false;
         }
 
+        class SimilarClassPropDescrEqualityComparer : IEqualityComparer<SimilarClassPropertyDescription>
+        {
+            public bool Equals(SimilarClassPropertyDescription x, SimilarClassPropertyDescription y)
+            {
+                return x.ObjectName1 == y.ObjectName1 &&
+                    x.SimilarityScore == y.SimilarityScore &&
+                    x.MergeClassRelation == y.MergeClassRelation &&
+                    x.MergePropRelation == y.MergePropRelation &&
+                    x.SimObjectURI1 == y.SimObjectURI1 &&
+                    x.SimObjectURI2 == y.SimObjectURI2;
+            }
+
+            public int GetHashCode(SimilarClassPropertyDescription obj)
+            {
+                return obj.GetHashCode();
+            }
+        }
+
         private void btnAddMClasses_Click(object sender, RoutedEventArgs e)
         {
-            groupMClasses.IsEnabled = false;
+            ObservableCollection<SimilarClassPropertyDescription> pairs = this.dataGridMPairs.ItemsSource as ObservableCollection<SimilarClassPropertyDescription>;
+
+            SimilarClassPropertyDescription pair = new SimilarClassPropertyDescription
+            {
+                ObjectName1 = this.comboMClass1.SelectedItem.ToString(),
+                ObjectName2 = this.comboMClass2.SelectedItem.ToString(),
+                MergeClassRelation = MergeClassRelation.SubClassOf,
+                SimilarityScore = 1 //added by user
+            };
+
+            if (!pairs.Contains(pair, new SimilarClassPropDescrEqualityComparer()))
+            {
+                pairs.Add(pair);
+
+                groupMClasses.IsEnabled = false;
+            }
+            else
+            {
+                MessageBox.Show("This merge pair has been already added!", "Error!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
         }
 
         private void btnAddMProps_Click(object sender, RoutedEventArgs e)
         {
-            groupMClasses.IsEnabled = true;
+            ObservableCollection<SimilarClassPropertyDescription> pairs = this.dataGridMPairs.ItemsSource as ObservableCollection<SimilarClassPropertyDescription>;
+
+            SimilarClassPropertyDescription pair = new SimilarClassPropertyDescription
+            {
+                ObjectName1 = this.comboMProp1.SelectedItem.ToString(),
+                ObjectName2 = this.comboMProp2.SelectedItem.ToString(),
+                MergePropRelation = MergePropertyRelation.EquivalentProperty,
+                SimilarityScore = 1 //added by user
+            };
+
+            if (!pairs.Contains(pair, new SimilarClassPropDescrEqualityComparer()))
+            {
+                pairs.Add(pair);
+
+                groupMClasses.IsEnabled = true;
+            }
+            else
+            {
+                MessageBox.Show("This merge pair has been already added!", "Error!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
         }
 
         #region Ontology Merger Tab
@@ -386,6 +447,7 @@ namespace DBIntegrator
             if(ontologyPath!= null)
             {
                 this.txtOntologyName1.Text = ontologyPath;
+                PopulateOMergerComboBoxes(ontology1Changed: true);
             }
         }
         
@@ -396,6 +458,7 @@ namespace DBIntegrator
             if (ontologyPath != null)
             {
                 this.txtOntologyName2.Text = ontologyPath;
+                PopulateOMergerComboBoxes(ontology2Changed: true);
             }
         }
         
@@ -473,77 +536,88 @@ namespace DBIntegrator
             }
             this.progressBarMerge.Value = percent;
         }
-        
 
-        private void TabOntologyMerger_Selected()
+        private void PopulateOMergerComboBoxes(bool ontology1Changed=false, bool ontology2Changed=false)
         {
-            //populate classes / properties combo boxes
-            if (File.Exists(this.txtOntologyName1.Text) && File.Exists(this.txtOntologyName2.Text))
+            if (this.txtOntologyName1 != null && this.txtOntologyName2 != null)
             {
-                OntologyGraph ontology = null;
-                if (this.comboMClass1.HasItems==false || this.comboMProp1.HasItems == false)
+                //populate classes / properties combo boxes
+                if (File.Exists(this.txtOntologyName1.Text) && File.Exists(this.txtOntologyName2.Text))
                 {
-                    ontology = new OntologyGraph();
-                    ontology.LoadFromFile(this.txtOntologyName1.Text);
-
-                    foreach(OntologyClass oclass in ontology.AllClasses)
+                    if(ontology1Changed)
                     {
-                        this.comboMClass1.Items.Add(oclass.ToString());
-                    }
-                    this.comboMClass1.SelectedIndex = 0;
-
-
-                    List<string> propertiesList = new List<string>();
-                    foreach(OntologyProperty objectProp in ontology.OwlObjectProperties)    //add object properties
-                    {
-                        propertiesList.Add(objectProp.ToString());
+                        this.comboMClass1.Items.Clear();
+                        this.comboMProp1.Items.Clear();
+                        
                     }
 
-                    IEnumerable<Triple> dataTypePropTriples = ontology.GetTriplesWithPredicateObject(ontology.CreateUriNode("rdf:type"),
-                        ontology.CreateUriNode("owl:DataTypeProperty"));
-
-                    foreach(var triple in dataTypePropTriples)
+                    if(ontology2Changed)
                     {
-                        propertiesList.Add(triple.Subject.ToString());
+                        this.comboMClass2.Items.Clear();
+                        this.comboMProp2.Items.Clear();
                     }
-                    this.comboMProp1.ItemsSource = propertiesList;
-                    this.comboMProp1.SelectedIndex = 0;
+
+                    OntologyGraph ontology = null;
+                    
+                    if (this.comboMClass1.Items.Count == 0 && this.comboMProp1.Items.Count == 0)
+                    {
+                        ontology = new OntologyGraph();
+                        ontology.LoadFromFile(this.txtOntologyName1.Text);
+
+                        foreach (OntologyClass oclass in ontology.AllClasses)
+                        {
+                            this.comboMClass1.Items.Add(oclass.ToString());
+                        }
+                        this.comboMClass1.SelectedIndex = 0;
+
+
+                        foreach (OntologyProperty objectProp in ontology.OwlObjectProperties)    //add object properties
+                        {
+                            this.comboMProp1.Items.Add(objectProp.ToString());
+                        }
+
+                        IEnumerable<Triple> dataTypePropTriples = ontology.GetTriplesWithPredicateObject(ontology.CreateUriNode("rdf:type"),
+                            ontology.CreateUriNode("owl:DataTypeProperty"));
+
+                        foreach (var triple in dataTypePropTriples)
+                        {
+                            this.comboMProp1.Items.Add(triple.Subject.ToString());
+                        }
+                        this.comboMProp1.SelectedIndex = 0;
+                    }
+
+                    if (this.comboMClass2.Items.Count == 0 && this.comboMProp2.Items.Count == 0)
+                    {
+                        ontology = new OntologyGraph();
+                        ontology.LoadFromFile(this.txtOntologyName2.Text);
+
+                        foreach (OntologyClass oclass in ontology.AllClasses)
+                        {
+                            this.comboMClass2.Items.Add(oclass.ToString());
+                        }
+                        this.comboMClass2.SelectedIndex = 0;
+
+                        foreach (OntologyProperty objectProp in ontology.OwlObjectProperties)    //add object properties
+                        {
+                            this.comboMProp2.Items.Add(objectProp.ToString());
+                        }
+
+                        IEnumerable<Triple> dataTypePropTriples = ontology.GetTriplesWithPredicateObject(ontology.CreateUriNode("rdf:type"),
+                            ontology.CreateUriNode("owl:DataTypeProperty"));
+
+                        foreach (var triple in dataTypePropTriples)
+                        {
+                            this.comboMProp2.Items.Add(triple.Subject.ToString());
+                        }
+                        this.comboMProp2.SelectedIndex = 0;
+                    }
                 }
-
-                if(this.comboMClass2.HasItems==false || this.comboMProp2.HasItems == false)
+                else
                 {
-                    ontology = new OntologyGraph();
-                    ontology.LoadFromFile(this.txtOntologyName2.Text);
-
-                    foreach (OntologyClass oclass in ontology.AllClasses)
-                    {
-                        this.comboMClass2.Items.Add(oclass.ToString());
-                    }
-                    this.comboMClass2.SelectedIndex = 0;
-
-                    foreach (OntologyProperty objectProp in ontology.OwlObjectProperties)    //add object properties
-                    {
-                        this.comboMProp2.Items.Add(objectProp.ToString());
-                    }
-
-                    IEnumerable<Triple> dataTypePropTriples = ontology.GetTriplesWithPredicateObject(ontology.CreateUriNode("rdf:type"),
-                        ontology.CreateUriNode("owl:DataTypeProperty"));
-
-                    foreach (var triple in dataTypePropTriples)
-                    {
-                        this.comboMProp2.Items.Add(triple.Subject.ToString());
-                    }
-                    this.comboMProp2.SelectedIndex = 0;
+                    //expand expander for user
+                    this.ontologyMergerExpander.IsExpanded = true;
                 }
-
-                //populate
             }
-            else
-            {
-                //expand expander for user
-                this.ontologyMergerExpander.IsExpanded = true;
-            }
-
         }
 
         private void groupMProps_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
