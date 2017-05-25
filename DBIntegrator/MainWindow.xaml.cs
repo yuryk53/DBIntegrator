@@ -500,6 +500,7 @@ namespace DBIntegrator
 
             merger.Initialize(gLMS, gKMS);
 
+            this.txtMergeStage.Content = "Stage 1/2: Matching two ontologies";
             IProgress<double> progress = new Progress<double>(pValue=>UpdateProgressBar((int)(pValue*100)));
 
 
@@ -651,6 +652,91 @@ namespace DBIntegrator
                     this.comboMProp2.SelectedIndex = 0;
                 }
             }
+        }
+
+        
+
+        private async void btnComputeMergePairs_Click(object sender, RoutedEventArgs e)
+        {
+            if (!File.Exists(this.txtOntologyName1.Text))
+            {
+                MessageBox.Show("Ontology #1 file doesn't exist! Check settings section.", "Error! File not found", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            if (!File.Exists(this.txtOntologyName2.Text))
+            {
+                MessageBox.Show("Ontology #2 file doesn't exist! Check settings section.", "Error! File not found", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            //create instance of selected in settings merger engine:
+            Type mergeEngine = this.ontologyMergers[this.comboOntologyMergeEngine.SelectedIndex];
+            Type ioMergerInterface = mergeEngine.GetInterface("IOntologyMerger");
+            Type iiMergerInterface = mergeEngine.GetInterface("IInteractiveMerger");
+            if (ioMergerInterface == null || iiMergerInterface ==null)
+            {
+                MessageBox.Show("Selected merger engine does not implement IOntologyMerger OR IInteractiveMerger interface!",
+                     "Error! Semi-automatic merging is not supported", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            IOntologyMerger merger = Activator.CreateInstance(mergeEngine) as IOntologyMerger;
+
+            if (merger == null)
+            {
+                MessageBox.Show("Unable to create merger engine instance!", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            OntologyGraph ontology1 = new OntologyGraph();
+            ontology1.LoadFromFile(this.txtOntologyName1.Text);
+
+            OntologyGraph ontology2 = new OntologyGraph();
+            ontology2.LoadFromFile(this.txtOntologyName2.Text);
+
+            merger.Initialize(ontology1, ontology2);
+
+            //get merge propositions for classes
+            ObservableCollection<SimilarClassPropertyDescription> dataGridItems = this.dataGridMPairs.ItemsSource as ObservableCollection<SimilarClassPropertyDescription>;
+            dataGridItems.Clear();
+            Dictionary<string, List<SimilarClassPropertyDescription>> simDict =
+                await Task.Factory.StartNew(()=>merger.GetSimilarOntologyClassesMatrix(progress: null));
+
+            //pass mergeClassPairs through threshold
+            List<SimilarClassPropertyDescription> similarClasses = new List<SimilarClassPropertyDescription>();
+            foreach (var key in simDict.Keys)
+            {
+                SimilarClassPropertyDescription map = (from mapping
+                                                       in simDict[key]
+                                                       where mapping.SimilarityScore == simDict[key].Max(x => x.SimilarityScore)
+                                                       select mapping).First(); //select pairs with highest similarity score
+                similarClasses.Add(map);
+                //dataGridItems.Add(map);     //add to datagrid
+            }
+
+            IInteractiveMerger iiMerger = merger as IInteractiveMerger;
+            iiMerger.MergeOntologyClasses(
+                similarClasses,
+                simPair => {
+                    bool canMerge = simPair.SimilarityScore >= this.sliderThresholdClasses.Value;
+                    if (canMerge)
+                    {
+                        dataGridItems.Add(simPair); //add to datagrid
+                    }
+                    return canMerge;
+                },        //no user interaction here
+                propPair => {
+                    bool canMerge = propPair.SimilarityScore >= this.sliderThresholdProperties.Value;
+                    if (canMerge)
+                    {
+                        dataGridItems.Add(propPair);
+                    }
+                    return canMerge;
+                },   //no user interaction here
+                this.sliderThresholdProperties.Value,
+                new ShortestFederatedNamesGenerator(),
+                new XSDTypeCaster(),
+                progress: null
+                );
         }
 
         #endregion

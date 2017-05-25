@@ -184,11 +184,12 @@
             <TabItem x:Name="ontoMergerTab" Header="Ontology Merger" Height="159" Margin="0,0,0,-23">
                 <Grid Style="{StaticResource tabGrids}">
                     <Grid x:Name="oMergerOperationGrid" Margin="0,10,0,63">
-                        <DataGrid x:Name="dataGridMPairs" ItemsSource="{Binding SimilarClassPropertyDescription}" AutoGenerateColumns="False" Margin="10,36,10,0" Height="218" VerticalAlignment="Top" ColumnWidth="*">
+                        <DataGrid x:Name="dataGridMPairs" ItemsSource="{Binding SimilarClassPropertyDescription}" AutoGenerateColumns="False" Margin="10,36,10,0" Height="218" VerticalAlignment="Top" HorizontalScrollBarVisibility="Auto">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Merged item #1" Binding="{Binding ObjectName1}"/>
-                                <DataGridTextColumn Header="Merged item #2" Binding="{Binding ObjectName2}"/>
-                                <DataGridTextColumn Header="Similarity" Width="70" Binding="{Binding SimilarityScore}"/>
+                                <DataGridTextColumn Header="Merged item #1" Binding="{Binding ObjectName1}" Width="Auto"/>
+                                <DataGridTextColumn Header="Merged item #2" Binding="{Binding ObjectName2}" Width="Auto"/>
+                                <DataGridTextColumn Header="Federated URI" Binding="{Binding FederatedURI}" Width="Auto"/>
+                                <DataGridTextColumn Header="Similarity" Binding="{Binding SimilarityScore}" IsReadOnly="True"/>
                             </DataGrid.Columns>
                         </DataGrid>
                         <Grid Margin="10,274,10,0" Height="224" VerticalAlignment="Top">
@@ -257,7 +258,7 @@
                         </Expander>
                     </Grid>
                     <Grid x:Name="mergerOperationButtons" Margin="13,0,10,23" HorizontalAlignment="Stretch" Height="35" VerticalAlignment="Bottom">
-                        <Button x:Name="btnSemiAutomaticMerge" Content="Start semi-automatic merging!" HorizontalAlignment="Left" VerticalAlignment="Top" Width="218"/>
+                        <Button x:Name="btnComputeMergePairs" Content="Compute probable merge pairs" HorizontalAlignment="Left" VerticalAlignment="Top" Width="218" Click="btnComputeMergePairs_Click"/>
                         <Button x:Name="btnAutomaticMerge" Content="Start automatic merging!" HorizontalAlignment="Center"  VerticalAlignment="Top" Width="216" Click="btnAutomaticMerge_Click"/>
                         <Button x:Name="btnSaveMergedOntology" Content="Merge selected items and save" HorizontalAlignment="Right" VerticalAlignment="Top" Width="218" Height="25"/>
                     </Grid>
