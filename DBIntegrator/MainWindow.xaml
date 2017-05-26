@@ -78,9 +78,19 @@
                 </Style>
             </TabControl.Resources>
             <TabItem Header="Home">
-                <Grid Style="{StaticResource tabGrids}"/>
+                <Grid Style="{StaticResource tabGrids}">
+                    <Image Source="/Images/logo.png" HorizontalAlignment="Left" Height="48" Margin="10,10,0,0" VerticalAlignment="Top" Width="48"/>
+                    <Label Content="Database Integrator (Copyright © Yurii Bilyk, 2017)" HorizontalAlignment="Left" VerticalContentAlignment="Center" Margin="76,10,0,0" VerticalAlignment="Top" Height="48" Width="Auto" FontSize="21.333" FontStyle="Italic"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="10,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="70" Width="1042">
+                        <Run Text="This software is designed for database integration using ontological mappings in real time. User can pose a SPARQL query to a federated shema and obtain a result, which is consistent across two distributed databases."/><LineBreak/><Run Text="Sequence of work with software is following: "/>
+                        <Hyperlink x:Name="hyperMapGeneratorTab" Click="hyperMapGeneratorTab_Click" >Generate databases' ontologies</Hyperlink>,
+                        <Hyperlink x:Name="hyperOntologyMergerTab" Click="hyperOntologyMergerTab_Click" >Merge generated ontologies</Hyperlink>,
+                        <Hyperlink x:Name="hyperQueryTab" Click="hyperQueryTab_Click" >Query federated schema</Hyperlink>
+                    </TextBlock>
+                
+                </Grid>
             </TabItem>
-            <TabItem Header="Query">
+            <TabItem x:Name="tabQuery" Header="Query">
                 <Grid Style="{StaticResource tabGrids}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="100*" />
@@ -137,7 +147,7 @@
                     <Button x:Name="btnExecuteQuery" Content="Execute" Margin="158,3,0,0" VerticalAlignment="Top" Height="23" HorizontalAlignment="Left" Width="84" Click="btnExecuteQuery_Click"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Mapping Generator" Height="155" Margin="0,0,0,0" FontWeight="Bold">
+            <TabItem x:Name="tabMapGen" Header="Mapping Generator" Height="155" Margin="0,0,0,0" FontWeight="Bold">
                 <Grid Style="{StaticResource tabGrids}">
                     <GroupBox x:Name="groupBox_DtPropInfo" Header="owl:Property info" HorizontalAlignment="Left" Margin="566,46,0,0" VerticalAlignment="Top" Height="306" Width="460">
                         <Grid Margin="0,0,-2,-3">

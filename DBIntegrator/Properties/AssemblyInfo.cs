@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("DBIntegrator")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("NTU 'KhPI'")]
 [assembly: AssemblyProduct("DBIntegrator")]
 [assembly: AssemblyCopyright("Copyright © Yurii Bilyk 2017")]
 [assembly: AssemblyTrademark("")]
@@ -54,3 +54,5 @@ using System.Windows;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: NeutralResourcesLanguage("en")]
+

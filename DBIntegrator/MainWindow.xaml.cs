@@ -875,5 +875,22 @@ namespace DBIntegrator
         }
 
         #endregion
+
+        #region Home TAB
+        private void hyperMapGeneratorTab_Click(object sender, RoutedEventArgs e)
+        {
+            this.tabMapGen.IsSelected = true;
+        }
+
+        private void hyperOntologyMergerTab_Click(object sender, RoutedEventArgs e)
+        {
+            this.ontoMergerTab.IsSelected = true;
+        }
+
+        private void hyperQueryTab_Click(object sender, RoutedEventArgs e)
+        {
+            this.tabQuery.IsSelected = true;
+        }
+        #endregion
     }
 }
