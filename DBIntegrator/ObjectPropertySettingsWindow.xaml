@@ -1,0 +1,19 @@
+﻿<Window x:Class="DBIntegrator.ObjectPropertySettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DBIntegrator"
+        mc:Ignorable="d"
+        Title="Object Property Settings" Height="186.586" Width="396.341" WindowStyle="None">
+    <Grid>
+        <Label Content="Domain:" HorizontalAlignment="Left" Margin="10,52,0,0" VerticalAlignment="Top"/>
+        <Label Content="Range:" HorizontalAlignment="Left" Margin="10,83,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblDomain" Content="[lblDomain]" Margin="73,52,10,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="comboRange" HorizontalAlignment="Left" Margin="73,87,0,0" VerticalAlignment="Top" Width="305"/>
+        <Label Content="Property:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtPropURI" Height="23" Margin="73,12,10,0" TextWrapping="Wrap" Text="[txtPropURI]" IsReadOnly="True" VerticalAlignment="Top"/>
+        <Button x:Name="btnSaveChanges" Content="Save changes" HorizontalAlignment="Left" Margin="279,141,0,0" VerticalAlignment="Top" Width="99"/>
+
+    </Grid>
+</Window>
