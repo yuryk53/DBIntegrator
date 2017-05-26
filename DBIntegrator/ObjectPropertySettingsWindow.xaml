@@ -5,15 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DBIntegrator"
         mc:Ignorable="d"
-        Title="Object Property Settings" Height="186.586" Width="396.341" WindowStyle="None">
+        Title="Object Property Settings" Height="208.582" Width="409.235" WindowStyle="SingleBorderWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid>
         <Label Content="Domain:" HorizontalAlignment="Left" Margin="10,52,0,0" VerticalAlignment="Top"/>
         <Label Content="Range:" HorizontalAlignment="Left" Margin="10,83,0,0" VerticalAlignment="Top"/>
         <Label x:Name="lblDomain" Content="[lblDomain]" Margin="73,52,10,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="comboRange" HorizontalAlignment="Left" Margin="73,87,0,0" VerticalAlignment="Top" Width="305"/>
+        <ComboBox x:Name="comboRange" Margin="73,87,10,0" VerticalAlignment="Top"/>
         <Label Content="Property:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="txtPropURI" Height="23" Margin="73,12,10,0" TextWrapping="Wrap" Text="[txtPropURI]" IsReadOnly="True" VerticalAlignment="Top"/>
-        <Button x:Name="btnSaveChanges" Content="Save changes" HorizontalAlignment="Left" Margin="279,141,0,0" VerticalAlignment="Top" Width="99"/>
+        <Button x:Name="btnSaveChanges" Content="Save changes" Margin="294,0,10,10" Click="btnSaveChanges_Click" Height="22" VerticalAlignment="Bottom"/>
 
     </Grid>
 </Window>

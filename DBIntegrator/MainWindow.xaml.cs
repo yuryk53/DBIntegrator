@@ -88,6 +88,7 @@ namespace DBIntegrator
             }
         }
 
+        #region Query TAB
         private void btnExecuteQuery_Click(object sender, RoutedEventArgs e)
         {
             string query = new TextRange(this.queryRichTBox.Document.ContentStart, this.queryRichTBox.Document.ContentEnd).Text;
@@ -126,12 +127,14 @@ namespace DBIntegrator
                 this.txtOntoPath.Text = openDlg.FileName;
             }
         }
+        #endregion
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Properties.Settings.Default.Save();
         }
 
+        #region Ontology Generator TAB
         private void btnGenerateOntology_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveDlg = new SaveFileDialog();
@@ -214,14 +217,14 @@ namespace DBIntegrator
             this.ontologyTreeView.Items.Add(thingItem);
         }
 
-        enum OntologyObjectType
+        internal enum OntologyObjectType
         {
             CLASS,
             DATATYPE_PROPERTY,
             OBJECT_PROPERTY
         }
 
-        class TreeViewItemOntologyInfo
+        internal class TreeViewItemOntologyInfo
         {
             public string URI { get; set; }
             public string Domain { get; set; }
@@ -284,7 +287,15 @@ namespace DBIntegrator
 
         private void ontologyTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            TreeViewItem selected = e.NewValue as TreeViewItem;
+            if (e.NewValue != null)
+            {
+                TreeViewItem selected = e.NewValue as TreeViewItem;
+                UpdateSelectedTviInfo(selected);
+            }
+        }
+
+        private void UpdateSelectedTviInfo(TreeViewItem selected)
+        {
             TreeViewItemOntologyInfo ontologyInfo = selected.Tag as TreeViewItemOntologyInfo;
 
             if (ontologyInfo.Type == OntologyObjectType.DATATYPE_PROPERTY)
@@ -294,11 +305,12 @@ namespace DBIntegrator
                 lblType.Content = "owl:DataTypeProperty";
 
                 chkIsIFP.IsEnabled = false;
-                
+                btnConvertDtToObjProp.IsEnabled = true;
             }
-            else if(ontologyInfo.Type == OntologyObjectType.OBJECT_PROPERTY)
+            else if (ontologyInfo.Type == OntologyObjectType.OBJECT_PROPERTY)
             {
                 chkIsIFP.IsEnabled = true;
+                btnConvertDtToObjProp.IsEnabled = false;
                 chkIsIFP.IsChecked = IsInverseFunctionalObjProp(ontologyInfo);
 
                 lblDomain.Content = ontologyInfo.Domain;
@@ -306,8 +318,9 @@ namespace DBIntegrator
                 lblType.Content = "owl:ObjectProperty";
             }
             else
-            { 
+            {
                 chkIsIFP.IsEnabled = false;
+                btnConvertDtToObjProp.IsEnabled = false;
             }
         }
 
@@ -348,6 +361,41 @@ namespace DBIntegrator
             btnSaveChanges.IsEnabled = false;
         }
 
+        //convert DataTypeProperty to an ObjectProperty
+        private void btnConvertDtToObjProp_Click(object sender, RoutedEventArgs e)
+        {
+            TreeViewItem selectedTVI = this.ontologyTreeView.SelectedItem as TreeViewItem;
+            TreeViewItemOntologyInfo ontologyInfo = selectedTVI.Tag as TreeViewItemOntologyInfo;
+
+            ObjectPropertySettingsWindow settingsWnd = new ObjectPropertySettingsWindow(ontologyInfo, (tviInfo) => {
+                //UpdateTreeView(ograph);
+                UpdateSelectedTviToObjectTreeViewItem(new TreeViewItemOntologyInfo
+                {
+                    URI = tviInfo.URI,
+                    Domain = tviInfo.Domain,
+                    Range = tviInfo.Range,
+                    OntologyGraph = tviInfo.OntologyGraph,
+                    Type = tviInfo.Type
+                });
+                UpdateSelectedTviInfo(selectedTVI);
+                this.btnSaveChanges.IsEnabled = true;
+            });
+
+            settingsWnd.ShowDialog();
+        }
+
+        private void UpdateSelectedTviToObjectTreeViewItem(TreeViewItemOntologyInfo newInfo)
+        {
+            //TreeViewItem updated = GetTreeViewItem(newInfo.URI, OntologyObjectType.OBJECT_PROPERTY);
+            //updated.Tag = newInfo;
+
+            TreeViewItem selected = this.ontologyTreeView.SelectedItem as TreeViewItem;
+            ((selected.Header as StackPanel).Children[0] as Image).Source = new BitmapImage(new Uri(@"/Images/ontology_Object.png", UriKind.Relative));
+            selected.Tag = newInfo;
+        }
+        #endregion
+
+        #region Ontology Merger Tab
         class SimilarClassPropDescrEqualityComparer : IEqualityComparer<SimilarClassPropertyDescription>
         {
             public bool Equals(SimilarClassPropertyDescription x, SimilarClassPropertyDescription y)
@@ -414,7 +462,7 @@ namespace DBIntegrator
             }
         }
 
-        #region Ontology Merger Tab
+        
         private string ShowOpenOntologyDialog() //returns ontology path
         {
             OpenFileDialog openDlg = new OpenFileDialog();
@@ -892,5 +940,7 @@ namespace DBIntegrator
             this.tabQuery.IsSelected = true;
         }
         #endregion
+
+        
     }
 }

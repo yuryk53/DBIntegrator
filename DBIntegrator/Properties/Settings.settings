@@ -35,5 +35,19 @@
     <Setting Name="mergedOntology2Path" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\\</Value>
     </Setting>
+    <Setting Name="foafTerms" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;foaf:mbox&lt;/string&gt;
+  &lt;string&gt;foaf:phone&lt;/string&gt;
+  &lt;string&gt;foaf:Person&lt;/string&gt;
+  &lt;string&gt;foaf:Image&lt;/string&gt;
+  &lt;string&gt;foaf:Group&lt;/string&gt;
+  &lt;string&gt;foaf:Document&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+    <Setting Name="foafUri" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://xmlns.com/foaf/0.1/</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -158,6 +158,7 @@
                             <Label x:Name="lblRange" HorizontalAlignment="Left" Margin="90,44,0,0" VerticalAlignment="Top" Width="350" Height="112"/>
                             <Label x:Name="lblType" HorizontalAlignment="Left" Margin="90,165,0,0" VerticalAlignment="Top" Width="350" Height="25"/>
                             <CheckBox x:Name="chkIsIFP" IsEnabled="False" Content="Is Inverse Functional Property? (only for owl:ObjectProperty)" HorizontalAlignment="Left" Margin="10,215,0,0" VerticalAlignment="Top" Width="430" Checked="chkIsIFP_Checked"/>
+                            <Button x:Name="btnConvertDtToObjProp" IsEnabled="False" Content="Convert to object property" HorizontalAlignment="Left" Margin="10,239,0,0" VerticalAlignment="Top" Width="195" Click="btnConvertDtToObjProp_Click"/>
                         </Grid>
 
                     </GroupBox>

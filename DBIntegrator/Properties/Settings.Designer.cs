@@ -156,5 +156,37 @@ namespace DBIntegrator.Properties {
                 this["mergedOntology2Path"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>foaf:mbox</string>
+  <string>foaf:phone</string>
+  <string>foaf:Person</string>
+  <string>foaf:Image</string>
+  <string>foaf:Group</string>
+  <string>foaf:Document</string>
+</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection foafTerms {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["foafTerms"]));
+            }
+            set {
+                this["foafTerms"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://xmlns.com/foaf/0.1/")]
+        public string foafUri {
+            get {
+                return ((string)(this["foafUri"]));
+            }
+            set {
+                this["foafUri"] = value;
+            }
+        }
     }
 }
