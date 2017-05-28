@@ -302,7 +302,7 @@ namespace DBIntegrator
             {
                 lblDomain.Content = ontologyInfo.Domain;
                 lblRange.Content = ontologyInfo.Range;
-                lblType.Content = "owl:DataTypeProperty";
+                lblType.Content = "owl:DatatypeProperty";
 
                 chkIsIFP.IsEnabled = false;
                 btnConvertDtToObjProp.IsEnabled = true;
@@ -361,7 +361,7 @@ namespace DBIntegrator
             btnSaveChanges.IsEnabled = false;
         }
 
-        //convert DataTypeProperty to an ObjectProperty
+        //convert DatatypeProperty to an ObjectProperty
         private void btnConvertDtToObjProp_Click(object sender, RoutedEventArgs e)
         {
             TreeViewItem selectedTVI = this.ontologyTreeView.SelectedItem as TreeViewItem;
@@ -628,7 +628,7 @@ namespace DBIntegrator
                         }
 
                         IEnumerable<Triple> dataTypePropTriples = ontology.GetTriplesWithPredicateObject(ontology.CreateUriNode("rdf:type"),
-                            ontology.CreateUriNode("owl:DataTypeProperty"));
+                            ontology.CreateUriNode("owl:DatatypeProperty"));
 
                         foreach (var triple in dataTypePropTriples)
                         {
@@ -654,7 +654,7 @@ namespace DBIntegrator
                         }
 
                         IEnumerable<Triple> dataTypePropTriples = ontology.GetTriplesWithPredicateObject(ontology.CreateUriNode("rdf:type"),
-                            ontology.CreateUriNode("owl:DataTypeProperty"));
+                            ontology.CreateUriNode("owl:DatatypeProperty"));
 
                         foreach (var triple in dataTypePropTriples)
                         {

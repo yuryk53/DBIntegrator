@@ -70,7 +70,7 @@ namespace DBIntegrator
             OntologyGraph ontology = tviInfo.OntologyGraph;
             INode subj = ontology.CreateUriNode(new Uri(tviInfo.URI));
             INode pred = ontology.CreateUriNode("rdf:type");
-            INode obj = ontology.CreateUriNode("owl:DataTypeProperty");
+            INode obj = ontology.CreateUriNode("owl:DatatypeProperty");
 
 
             //2. Delete old datatype property & its ranges
