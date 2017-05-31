@@ -756,8 +756,7 @@ namespace DBIntegrator
             //get merge propositions for classes
             ObservableCollection<SimilarClassPropertyDescription> dataGridItems = this.dataGridMPairs.ItemsSource as ObservableCollection<SimilarClassPropertyDescription>;
             dataGridItems.Clear();
-            this.lblCount.Content = "0";
-            this.lblDeleted.Content = "0";
+            
 
             lblMergeStage.Content = "Computing merge pairs based on semantic similarity";
             IProgress<double> progress = new Progress<double>(pValue => UpdateProgressBar((int)(pValue * 100)));
@@ -804,6 +803,9 @@ namespace DBIntegrator
                 new XSDTypeCaster(),
                 progress: null
                 );
+
+            this.lblCount.Content = dataGridItems.Count;
+            this.lblDeleted.Content = "0";
         }
 
         private void btnSaveMergedOntology_Click(object sender, RoutedEventArgs e)
@@ -957,33 +959,12 @@ namespace DBIntegrator
                 this.txtMEtalonOntology.Text = etalonOntologyPath;
             }
         }
-        #endregion
 
-        #region Home TAB
-        private void hyperMapGeneratorTab_Click(object sender, RoutedEventArgs e)
-        {
-            this.tabMapGen.IsSelected = true;
-        }
-
-        private void hyperOntologyMergerTab_Click(object sender, RoutedEventArgs e)
-        {
-            this.ontoMergerTab.IsSelected = true;
-        }
-
-        private void hyperQueryTab_Click(object sender, RoutedEventArgs e)
-        {
-            this.tabQuery.IsSelected = true;
-        }
-
-
-
-
-        #endregion
 
         private void btnCalcMetrics_Click(object sender, RoutedEventArgs e)
         {
             var mergeItems = this.dataGridMPairs.ItemsSource as ObservableCollection<SimilarClassPropertyDescription>;
-            if (mergeItems==null || mergeItems.Count==0)
+            if (mergeItems == null || mergeItems.Count == 0)
             {
                 MessageBox.Show("The merge table is empty! You should calculate merge pairs first!", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -1032,14 +1013,14 @@ namespace DBIntegrator
 
 
                     //int fpClass = (merged.AllClasses.Except(ographEtalon.AllClasses, new OClassUriComparer())).Count(); //false positives
-                    int tpClass = (merged.AllClasses.Intersect(ographEtalon.AllClasses, new OClassUriComparer())).Count()-sourceSchemaClassCount; //true positives
+                    int tpClass = (merged.AllClasses.Intersect(ographEtalon.AllClasses, new OClassUriComparer())).Count() - sourceSchemaClassCount; //true positives
                     int fnClass = (ographEtalon.AllClasses.Except(merged.AllClasses, new OClassUriComparer())).Count(); //false negatives
 
                     //int fpProp = (merged.AllProperties.Except(ographEtalon.AllProperties, new OPropUriComparer())).Count(); //false positives
-                    int tpProp = (merged.AllProperties.Intersect(ographEtalon.AllProperties, new OPropUriComparer())).Count()-sourceSchemaPropCount; //true positives
+                    int tpProp = (merged.AllProperties.Intersect(ographEtalon.AllProperties, new OPropUriComparer())).Count() - sourceSchemaPropCount; //true positives
                     int fnProp = (ographEtalon.AllProperties.Except(merged.AllProperties, new OPropUriComparer())).Count(); //false negatives
 
-                    
+
                     int tp = tpClass + tpProp;
                     int fp = int.Parse(this.lblCount.Content.ToString()) - tp;
                     int fn = fnClass + fnProp;
@@ -1074,6 +1055,31 @@ namespace DBIntegrator
                 return obj.ToString().GetHashCode();
             }
         }
+
+        #endregion
+
+        #region Home TAB
+        private void hyperMapGeneratorTab_Click(object sender, RoutedEventArgs e)
+        {
+            this.tabMapGen.IsSelected = true;
+        }
+
+        private void hyperOntologyMergerTab_Click(object sender, RoutedEventArgs e)
+        {
+            this.ontoMergerTab.IsSelected = true;
+        }
+
+        private void hyperQueryTab_Click(object sender, RoutedEventArgs e)
+        {
+            this.tabQuery.IsSelected = true;
+        }
+
+
+
+
+        #endregion
+
+        
 
 
     }
