@@ -92,6 +92,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MetricsOntologyMerger.cs" />
     <Compile Include="ObjectPropertySettingsWindow.xaml.cs">
       <DependentUpon>ObjectPropertySettingsWindow.xaml</DependentUpon>
     </Compile>

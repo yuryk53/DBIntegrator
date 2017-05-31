@@ -87,7 +87,7 @@
                         <Hyperlink x:Name="hyperOntologyMergerTab" Click="hyperOntologyMergerTab_Click" >Merge generated ontologies</Hyperlink>,
                         <Hyperlink x:Name="hyperQueryTab" Click="hyperQueryTab_Click" >Query federated schema</Hyperlink>
                     </TextBlock>
-                
+
                 </Grid>
             </TabItem>
             <TabItem x:Name="tabQuery" Header="Query">
@@ -195,7 +195,7 @@
             <TabItem x:Name="ontoMergerTab" Header="Ontology Merger" Height="159" Margin="0,0,0,-23">
                 <Grid Style="{StaticResource tabGrids}">
                     <Grid x:Name="oMergerOperationGrid" Margin="0,10,0,63">
-                        <DataGrid x:Name="dataGridMPairs" ItemsSource="{Binding SimilarClassPropertyDescription}" AutoGenerateColumns="False" Margin="10,36,10,0" Height="218" VerticalAlignment="Top" HorizontalScrollBarVisibility="Auto">
+                        <DataGrid x:Name="dataGridMPairs" ItemsSource="{Binding SimilarClassPropertyDescription}" AutoGenerateColumns="False" Margin="10,36,10,0" Height="218" VerticalAlignment="Top" HorizontalScrollBarVisibility="Auto" PreviewKeyDown="dataGridMPairs_PreviewKeyDown" SelectionChanged="dataGridMPairs_SelectionChanged">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Merged item #1" Binding="{Binding ObjectName1}" Width="Auto"/>
                                 <DataGridTextColumn Header="Merged item #2" Binding="{Binding ObjectName2}" Width="Auto"/>
@@ -246,7 +246,9 @@
                                 </Image.RenderTransform>
                             </Image>
                         </Grid>
-                        <Expander x:Name="ontologyMergerExpander" IsEnabled="{Binding ElementName=groupMClasses, Path=IsEnabled}" Header="Settings" HorizontalAlignment="Left" Margin="582,0,0,0" VerticalAlignment="Top" Height="325" Width="442">
+
+                        <!--IsEnabled="{Binding ElementName=groupMClasses, Path=IsEnabled}"-->
+                        <Expander x:Name="ontologyMergerExpander"  Header="Settings" HorizontalAlignment="Left" Margin="582,0,0,0" VerticalAlignment="Top" Height="325" Width="442">
                             <Grid Background="#FFE5E5E5" Height="294" Margin="0">
                                 <Grid.Effect>
                                     <DropShadowEffect/>
@@ -278,6 +280,20 @@
                         <Label x:Name="lblMergeStage" HorizontalContentAlignment="Center" Content="Stage 1/2: Matching two ontologies" Margin="290,216,272,318" Width="500" />
                         <ProgressBar x:Name="progressBarMerge" HorizontalAlignment="Left" Height="25" Margin="254,253,0,0" VerticalAlignment="Top" Width="566" Minimum="0" Maximum="100"/>
                     </Grid>
+                    <Label Content="Deleted: " HorizontalAlignment="Left" Margin="13,10,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="lblDeleted" Content="0" HorizontalAlignment="Left" Margin="86,10,0,0" VerticalAlignment="Top" Width="62"/>
+                    <Label Content="Count: " HorizontalAlignment="Left" Margin="121,10,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="lblCount" Content="0" HorizontalAlignment="Left" Margin="183,10,0,0" VerticalAlignment="Top" Width="70"/>
+                    <Expander Header="Metrics settings" HorizontalAlignment="Left" Margin="272,10,0,0" VerticalAlignment="Top">
+                        <Grid Background="#FFE5E5E5" Width="286" Height="144">
+                            <Grid>
+                                <TextBox x:Name="txtMEtalonOntology" Height="24" Margin="10,42,10,0" TextWrapping="Wrap" Text="C:\\etalon.owl" VerticalAlignment="Top"/>
+                                <Label Content="Etalon ontology:" HorizontalAlignment="Left" Margin="10,8,0,0" VerticalAlignment="Top"/>
+                                <Button x:Name="btnMOpenEtalonOntology" Content="Open etalon ontology" HorizontalAlignment="Left" Margin="10,71,0,0" VerticalAlignment="Top" Width="164" Click="btnMOpenEtalonOntology_Click"/>
+                                <Button x:Name="btnCalcMetrics" Content="Calculate metrics" Margin="144,109,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="132" Click="btnCalcMetrics_Click"/>
+                            </Grid>
+                        </Grid>
+                    </Expander>
                 </Grid>
             </TabItem>
         </TabControl>

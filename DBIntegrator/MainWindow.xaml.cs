@@ -756,6 +756,8 @@ namespace DBIntegrator
             //get merge propositions for classes
             ObservableCollection<SimilarClassPropertyDescription> dataGridItems = this.dataGridMPairs.ItemsSource as ObservableCollection<SimilarClassPropertyDescription>;
             dataGridItems.Clear();
+            this.lblCount.Content = "0";
+            this.lblDeleted.Content = "0";
 
             lblMergeStage.Content = "Computing merge pairs based on semantic similarity";
             IProgress<double> progress = new Progress<double>(pValue => UpdateProgressBar((int)(pValue * 100)));
@@ -806,6 +808,21 @@ namespace DBIntegrator
 
         private void btnSaveMergedOntology_Click(object sender, RoutedEventArgs e)
         {
+            OntologyGraph merged = MergeOntologiesUsingMergeTable();
+
+            if(merged!= null)
+            {
+                string savePath = ShowSaveOntologyDialog();
+                merged.SaveToFile(savePath);
+            }
+            else
+            {
+                MessageBox.Show("Ontology merging failed!", "Unknown error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private OntologyGraph MergeOntologiesUsingMergeTable()
+        {
             Type mergeEngine = this.ontologyMergers[this.comboOntologyMergeEngine.SelectedIndex];
             Type ioMergerInterface = mergeEngine.GetInterface("IOntologyMerger");
             Type iiMergerInterface = mergeEngine.GetInterface("IInteractiveMerger");
@@ -813,7 +830,7 @@ namespace DBIntegrator
             {
                 MessageBox.Show("Selected merger engine does not implement IOntologyMerger OR IInteractiveMerger interface!",
                      "Error! Semi-automatic merging is not supported", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                return null;
             }
 
             IOntologyMerger merger = Activator.CreateInstance(mergeEngine) as IOntologyMerger;
@@ -821,18 +838,18 @@ namespace DBIntegrator
             if (merger == null)
             {
                 MessageBox.Show("Unable to create merger engine instance!", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                return null;
             }
 
             OntologyGraph ontology1 = this.oMergerSettings.Ontology1;
-            if(ontology1== null)
+            if (ontology1 == null)
             {
                 ontology1 = new OntologyGraph();
                 ontology1.LoadFromFile(this.txtOntologyName1.Text);
             }
 
             OntologyGraph ontology2 = this.oMergerSettings.Ontology2;
-            if(ontology2== null)
+            if (ontology2 == null)
             {
                 ontology2 = new OntologyGraph();
                 ontology2.LoadFromFile(this.txtOntologyName2.Text);
@@ -845,22 +862,22 @@ namespace DBIntegrator
             ObservableCollection<SimilarClassPropertyDescription> dataGridItems = this.dataGridMPairs.ItemsSource as ObservableCollection<SimilarClassPropertyDescription>;
             List<SimilarClassPropertyDescription> similarClasses = new List<SimilarClassPropertyDescription>();
             List<SimilarClassPropertyDescription> similarProps = new List<SimilarClassPropertyDescription>();
-            foreach(SimilarClassPropertyDescription scpd in dataGridItems)
+            foreach (SimilarClassPropertyDescription scpd in dataGridItems)
             {
-                if(scpd.MergeClassRelation != MergeClassRelation.NotApplicable) //it's a class
+                if (scpd.MergeClassRelation != MergeClassRelation.NotApplicable) //it's a class
                 {
                     similarClasses.Add(scpd);
                 }
-                else if(scpd.MergePropRelation != MergePropertyRelation.NotApplicable) //it's a property
+                else if (scpd.MergePropRelation != MergePropertyRelation.NotApplicable) //it's a property
                 {
                     similarProps.Add(scpd);
                 }
             }
 
-            if(similarClasses.Count==0)
+            if (similarClasses.Count == 0)
             {
                 MessageBox.Show("There're no classes to merge! Try adding values to a table or pressing 'Compute probable merge pairs' button!", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                return null;
             }
 
             OntologyGraph merged = iiMerger.MergeOntologyClasses(
@@ -883,17 +900,17 @@ namespace DBIntegrator
                     (string classUri1, string classUri2, IProgress<double> progress) =>
                     {
                         Dictionary<string, List<SimilarClassPropertyDescription>> simDict = new Dictionary<string, List<SimilarClassPropertyDescription>>();
-                        foreach(SimilarClassPropertyDescription scpd in similarProps)
+                        foreach (SimilarClassPropertyDescription scpd in similarProps)
                         {
-                            if(scpd.ObjectName1.Contains(classUri1) && scpd.ObjectName2.Contains(classUri2))
+                            if (scpd.ObjectName1.Contains(classUri1) && scpd.ObjectName2.Contains(classUri2))
                             {
-                                if(!simDict.ContainsKey(scpd.ObjectName1))
+                                if (!simDict.ContainsKey(scpd.ObjectName1))
                                 {
                                     simDict.Add(scpd.ObjectName1, new List<SimilarClassPropertyDescription>());
                                 }
                                 simDict[scpd.ObjectName1].Add(scpd);
                             }
-                            else if(scpd.ObjectName2.Contains(classUri1) && scpd.ObjectName1.Contains(classUri2))
+                            else if (scpd.ObjectName2.Contains(classUri1) && scpd.ObjectName1.Contains(classUri2))
                             {
                                 if (!simDict.ContainsKey(scpd.ObjectName2))
                                 {
@@ -906,15 +923,7 @@ namespace DBIntegrator
                     }
             ) as OntologyGraph;
 
-            if(merged!= null)
-            {
-                string savePath = ShowSaveOntologyDialog();
-                merged.SaveToFile(savePath);
-            }
-            else
-            {
-                MessageBox.Show("Ontology merging failed!", "Unknown error!", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            return merged;
         }
 
         private void btnSwitchToNextClass_Click(object sender, RoutedEventArgs e)
@@ -922,6 +931,32 @@ namespace DBIntegrator
             this.groupMClasses.IsEnabled = true;
         }
 
+        private void dataGridMPairs_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (Key.Delete == e.Key)
+            {
+                int deletedTillNow = int.Parse(this.lblDeleted.Content.ToString());
+                deletedTillNow++;
+                this.lblDeleted.Content = deletedTillNow.ToString();
+                this.lblCount.Content = (this.dataGridMPairs.ItemsSource as ObservableCollection<SimilarClassPropertyDescription>).Count.ToString();
+            }
+        }
+
+        private void dataGridMPairs_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.lblCount.Content = (this.dataGridMPairs.ItemsSource as ObservableCollection<SimilarClassPropertyDescription>).Count.ToString();
+        }
+
+
+        private void btnMOpenEtalonOntology_Click(object sender, RoutedEventArgs e)
+        {
+            string etalonOntologyPath = ShowOpenOntologyDialog();
+
+            if (etalonOntologyPath != null && etalonOntologyPath.Length > 0)
+            {
+                this.txtMEtalonOntology.Text = etalonOntologyPath;
+            }
+        }
         #endregion
 
         #region Home TAB
@@ -939,8 +974,107 @@ namespace DBIntegrator
         {
             this.tabQuery.IsSelected = true;
         }
+
+
+
+
         #endregion
 
-        
+        private void btnCalcMetrics_Click(object sender, RoutedEventArgs e)
+        {
+            var mergeItems = this.dataGridMPairs.ItemsSource as ObservableCollection<SimilarClassPropertyDescription>;
+            if (mergeItems==null || mergeItems.Count==0)
+            {
+                MessageBox.Show("The merge table is empty! You should calculate merge pairs first!", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            else
+            {
+                string etalonOntologyPath = this.txtMEtalonOntology.Text;
+                if (!File.Exists(etalonOntologyPath))
+                {
+                    MessageBox.Show("The etalon ontology path is invalid! Did you forget to open etalon ontology?", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                else
+                {
+                    //everything's OK
+                    OntologyGraph ographEtalon = new OntologyGraph();
+
+                    try
+                    {
+                        ographEtalon.LoadFromFile(etalonOntologyPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error loading etalon ontology!", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    OntologyGraph og1 = new OntologyGraph(), og2 = new OntologyGraph();
+                    og1.LoadFromFile(this.txtOntologyName1.Text);
+                    og2.LoadFromFile(this.txtOntologyName2.Text);
+                    int sourceSchemaClassCount = og1.AllClasses.Count() + og2.AllClasses.Count();
+                    int sourceSchemaPropCount = og1.AllProperties.Count() + og2.AllProperties.Count();
+                    og1.Dispose();
+                    og2.Dispose();
+
+                    OntologyGraph merged = MergeOntologiesUsingMergeTable();
+
+                    if (merged == null)
+                    {
+                        MessageBox.Show("Merging failed -> cannot compare etalon to merged", "Error while merging!", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    int etalonTotal = ographEtalon.AllClasses.Count() + ographEtalon.AllProperties.Count();
+
+
+
+                    //int fpClass = (merged.AllClasses.Except(ographEtalon.AllClasses, new OClassUriComparer())).Count(); //false positives
+                    int tpClass = (merged.AllClasses.Intersect(ographEtalon.AllClasses, new OClassUriComparer())).Count()-sourceSchemaClassCount; //true positives
+                    int fnClass = (ographEtalon.AllClasses.Except(merged.AllClasses, new OClassUriComparer())).Count(); //false negatives
+
+                    //int fpProp = (merged.AllProperties.Except(ographEtalon.AllProperties, new OPropUriComparer())).Count(); //false positives
+                    int tpProp = (merged.AllProperties.Intersect(ographEtalon.AllProperties, new OPropUriComparer())).Count()-sourceSchemaPropCount; //true positives
+                    int fnProp = (ographEtalon.AllProperties.Except(merged.AllProperties, new OPropUriComparer())).Count(); //false negatives
+
+                    
+                    int tp = tpClass + tpProp;
+                    int fp = int.Parse(this.lblCount.Content.ToString()) - tp;
+                    int fn = fnClass + fnProp;
+
+                    MessageBox.Show($"False positives: {fp}\nTrue positives: {tp}\nFalse negatives: {fn}");
+                }
+            }
+        }
+
+        class OClassUriComparer : IEqualityComparer<OntologyClass>
+        {
+            public bool Equals(OntologyClass x, OntologyClass y)
+            {
+                return x.ToString() == y.ToString();
+            }
+
+            public int GetHashCode(OntologyClass obj)
+            {
+                return obj.ToString().GetHashCode();
+            }
+        }
+
+        class OPropUriComparer : IEqualityComparer<OntologyProperty>
+        {
+            public bool Equals(OntologyProperty x, OntologyProperty y)
+            {
+                return x.ToString() == y.ToString();
+            }
+
+            public int GetHashCode(OntologyProperty obj)
+            {
+                return obj.ToString().GetHashCode();
+            }
+        }
+
+
     }
 }
