@@ -111,7 +111,7 @@ namespace DBIntegrator
 
                 this.resultsQueryDataGrid.DataContext = resultDt.DefaultView;
             }
-            catch(Exception ex)
+            catch(IOException ex)
             {
                 MessageBox.Show(ex.Message, "Error executing query!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
