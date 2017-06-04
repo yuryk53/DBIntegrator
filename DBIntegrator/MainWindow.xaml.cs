@@ -91,27 +91,32 @@ namespace DBIntegrator
         #region Query TAB
         private void btnExecuteQuery_Click(object sender, RoutedEventArgs e)
         {
-            string query = new TextRange(this.queryRichTBox.Document.ContentStart, this.queryRichTBox.Document.ContentEnd).Text;
-            string ontologyPath = this.txtOntoPath.Text;
-
-            QuantumQueryProcessor qProcessor = new QuantumQueryProcessor(ontologyPath);
-
-            qProcessor.AddDBInfo(this.txtConnString1.Text, this.txtDB1URI.Text, 
-                dbLoaderTypes.Find(t=>t.Name==this.comboDB1Loader.SelectedValue.ToString()));
-            qProcessor.AddDBInfo(this.txtConnString2.Text, this.txtDB2URI.Text,
-                dbLoaderTypes.Find(t => t.Name == this.comboDB1Loader.SelectedValue.ToString()));
-
-            //SparqlResultSet results =
-            //    qProcessor.ExecuteSparql(@" SELECT *
-            //                            WHERE { ?subj ?pred <http://www.example.org/FEDERATED/User/KMS.Id_User.95>.}");
-
             try {
-                SparqlResultSet results = qProcessor.ExecuteSparql(query);
-                DataTable resultDt = qProcessor.ConvertSparqlResultSetToDataTable(results);
+                string query = new TextRange(this.queryRichTBox.Document.ContentStart, this.queryRichTBox.Document.ContentEnd).Text;
+                string ontologyPath = this.txtOntoPath.Text;
 
-                this.resultsQueryDataGrid.DataContext = resultDt.DefaultView;
-            }
-            catch(IOException ex)
+                QuantumQueryProcessor qProcessor = new QuantumQueryProcessor(ontologyPath);
+
+                qProcessor.AddDBInfo(this.txtConnString1.Text, this.txtDB1URI.Text,
+                    dbLoaderTypes.Find(t => t.Name == this.comboDB1Loader.SelectedValue.ToString()));
+                qProcessor.AddDBInfo(this.txtConnString2.Text, this.txtDB2URI.Text,
+                    dbLoaderTypes.Find(t => t.Name == this.comboDB1Loader.SelectedValue.ToString()));
+
+                //SparqlResultSet results =
+                //    qProcessor.ExecuteSparql(@" SELECT *
+                //                            WHERE { ?subj ?pred <http://www.example.org/FEDERATED/User/KMS.Id_User.95>.}");
+
+                try {
+                    SparqlResultSet results = qProcessor.ExecuteSparql(query);
+                    DataTable resultDt = qProcessor.ConvertSparqlResultSetToDataTable(results);
+
+                    this.resultsQueryDataGrid.DataContext = resultDt.DefaultView;
+                }
+                catch (IOException ex)
+                {
+                    MessageBox.Show(ex.Message, "Error executing query!", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }catch(Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error executing query!", MessageBoxButton.OK, MessageBoxImage.Error);
             }

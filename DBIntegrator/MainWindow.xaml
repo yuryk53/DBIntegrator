@@ -124,29 +124,29 @@
                             </Paragraph>
                         </FlowDocument>
                     </RichTextBox>
-                    <Expander x:Name="expander" Header="Settings" Margin="0,4,10,0" HorizontalAlignment="Right" Width="399">
-                        <Grid Background="#FFE5E5E5" ClipToBounds="True">
+                    <DataGrid x:Name="resultsQueryDataGrid" Margin="10,34,10,10" Grid.Row="2" ItemsSource="{Binding}" CanUserAddRows="False" HorizontalScrollBarVisibility="Visible"/>
+                    <Button x:Name="btnExecuteQuery" Content="Execute" Margin="158,3,0,0" VerticalAlignment="Top" Height="23" HorizontalAlignment="Left" Width="84" Click="btnExecuteQuery_Click"/>
+                    <Label Content="Count: " HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="2" VerticalAlignment="Top"/>
+                    <Label x:Name="lblResultCount" Content="{Binding ElementName=resultsQueryDataGrid, Path=ItemsSource.Count}" HorizontalAlignment="Left" Margin="72,0,0,0" Grid.Row="2" Width="70" Height="24" VerticalAlignment="Top"/>
+                    <Expander x:Name="expander" Header="Settings" Margin="0,4,10,0" HorizontalAlignment="Right" Width="399" Height="Auto" VerticalAlignment="Top">
+                        <Grid Background="#FFE5E5E5" ClipToBounds="True" Height="351">
                             <Label Content="Ontology path:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                            <TextBox x:Name="txtOntoPath" Text="{Binding Source={StaticResource Settings}, Path=Default.ontologyPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="23" Margin="10,39,0,0" VerticalAlignment="Top" Width="377" FontSize="14" FontWeight="Normal"/>
+                            <TextBox x:Name="txtOntoPath" Text="{Binding Default.ontologyPath, Mode=TwoWay, Source={StaticResource Settings}, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="23" Margin="10,39,0,0" VerticalAlignment="Top" Width="377" FontSize="14" FontWeight="Normal"/>
                             <Button x:Name="btnBrowseOntology" Content="Browse" HorizontalAlignment="Left" Margin="264,67,0,0" VerticalAlignment="Top" Width="123" Click="btnBrowseOntology_Click"/>
                             <Label Content="Database #1 connection string:" HorizontalAlignment="Left" Margin="10,99,0,0" VerticalAlignment="Top"/>
-                            <TextBox x:Name="txtConnString1" Text="{Binding Source={StaticResource Settings}, Path=Default.db1ConnString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="23" Margin="10,128,0,0" VerticalAlignment="Top" Width="377" FontWeight="Normal"/>
+                            <TextBox x:Name="txtConnString1" Text="{Binding Default.db1ConnString, Mode=TwoWay, Source={StaticResource Settings}, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="23" Margin="10,128,0,0" VerticalAlignment="Top" Width="377" FontWeight="Normal"/>
                             <Label Content="Database #2 connection string:" HorizontalAlignment="Left" Margin="10,227,0,0" VerticalAlignment="Top"/>
-                            <TextBox x:Name="txtConnString2" Text="{Binding Source={StaticResource Settings}, Path=Default.db2ConnString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="23" Margin="10,256,0,0" VerticalAlignment="Top" Width="377" FontWeight="Normal"/>
+                            <TextBox x:Name="txtConnString2" Text="{Binding Default.db2ConnString, Mode=TwoWay, Source={StaticResource Settings}, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="23" Margin="10,256,0,0" VerticalAlignment="Top" Width="377" FontWeight="Normal"/>
                             <Label Content="Database #1 Ontology URI:" HorizontalAlignment="Left" Margin="10,156,0,0" VerticalAlignment="Top"/>
-                            <TextBox x:Name="txtDB1URI" Text="{Binding Source={StaticResource Settings}, Path=Default.db1URI, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="23" Margin="202,156,0,0" VerticalAlignment="Top" Width="185" FontWeight="Normal"/>
+                            <TextBox x:Name="txtDB1URI" Text="{Binding Default.db1URI, Mode=TwoWay, Source={StaticResource Settings}, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="23" Margin="202,156,0,0" VerticalAlignment="Top" Width="185" FontWeight="Normal"/>
                             <Label Content="Database #2 Ontology URI:" HorizontalAlignment="Left" Margin="10,284,0,0" VerticalAlignment="Top"/>
-                            <TextBox x:Name="txtDB2URI" Text="{Binding Source={StaticResource Settings}, Path=Default.db2URI, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="23" Margin="197,286,0,0" VerticalAlignment="Top" Width="190" FontWeight="Normal"/>
+                            <TextBox x:Name="txtDB2URI" Text="{Binding Default.db2URI, Mode=TwoWay, Source={StaticResource Settings}, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="23" Margin="197,286,0,0" VerticalAlignment="Top" Width="190" FontWeight="Normal"/>
                             <Label Content="DB Loader:" HorizontalAlignment="Left" Margin="10,185,0,0" VerticalAlignment="Top"/>
                             <ComboBox x:Name="comboDB1Loader" HorizontalAlignment="Left" Margin="202,185,0,0" VerticalAlignment="Top" Width="185"/>
                             <Label Content="DB Loader:" HorizontalAlignment="Left" Margin="10,313,0,0" VerticalAlignment="Top"/>
                             <ComboBox x:Name="comboDB2Loader" HorizontalAlignment="Left" Margin="197,315,0,0" VerticalAlignment="Top" Width="190"/>
                         </Grid>
                     </Expander>
-                    <DataGrid x:Name="resultsQueryDataGrid" Margin="10,34,10,10" Grid.Row="2" ItemsSource="{Binding}" CanUserAddRows="False" HorizontalScrollBarVisibility="Visible"/>
-                    <Button x:Name="btnExecuteQuery" Content="Execute" Margin="158,3,0,0" VerticalAlignment="Top" Height="23" HorizontalAlignment="Left" Width="84" Click="btnExecuteQuery_Click"/>
-                    <Label Content="Count: " HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="2" VerticalAlignment="Top"/>
-                    <Label x:Name="lblResultCount" Content="{Binding ElementName=resultsQueryDataGrid, Path=ItemsSource.Count}" HorizontalAlignment="Left" Margin="72,0,0,0" Grid.Row="2" Width="70" Height="24" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="tabMapGen" Header="Mapping Generator" Height="155" Margin="0,0,0,0" FontWeight="Bold">
