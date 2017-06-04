@@ -22,6 +22,7 @@ using VDS.RDF.Ontology;
 using MappingGenerator;
 using VDS.RDF;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace DBIntegrator
 {
@@ -92,6 +93,9 @@ namespace DBIntegrator
         private void btnExecuteQuery_Click(object sender, RoutedEventArgs e)
         {
             try {
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
+
                 string query = new TextRange(this.queryRichTBox.Document.ContentStart, this.queryRichTBox.Document.ContentEnd).Text;
                 string ontologyPath = this.txtOntoPath.Text;
 
@@ -111,6 +115,8 @@ namespace DBIntegrator
                     DataTable resultDt = qProcessor.ConvertSparqlResultSetToDataTable(results);
 
                     this.resultsQueryDataGrid.DataContext = resultDt.DefaultView;
+                    stopWatch.Stop();
+                    this.lblQueryExecTime.Content = stopWatch.Elapsed.ToString();
                 }
                 catch (IOException ex)
                 {
