@@ -246,7 +246,7 @@
                                     <Button x:Name="btnSwitchToNextClass" Content="Switch to next classes" HorizontalAlignment="Left" Margin="10,144,0,0" VerticalAlignment="Top" Width="172" Click="btnSwitchToNextClass_Click"/>
                                 </Grid>
                             </GroupBox>
-                            <Image Source="/Images/right-arrow.png" RenderTransformOrigin="0.5, 0.5" HorizontalAlignment="Center" Height="100" VerticalAlignment="Center" Width="100">
+                            <Image Source="/Images/right-arrow.png" RenderTransformOrigin="0.5, 0.5" HorizontalAlignment="Center" Width="100" Margin="471,62">
                                 <Image.RenderTransform>
                                     <ScaleTransform x:Name="arrowImageRotate" />
 
