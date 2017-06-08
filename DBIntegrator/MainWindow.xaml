@@ -255,7 +255,7 @@
                         </Grid>
 
                         <!--IsEnabled="{Binding ElementName=groupMClasses, Path=IsEnabled}"-->
-                        <Expander x:Name="ontologyMergerExpander"  Header="Settings" HorizontalAlignment="Left" Margin="582,0,0,0" VerticalAlignment="Top" Height="325" Width="442">
+                        <Expander x:Name="ontologyMergerExpander"  Header="Settings" HorizontalAlignment="Left" Margin="582,0,0,0" VerticalAlignment="Top" Height="Auto" Width="442">
                             <Grid Background="#FFE5E5E5" Height="294" Margin="0">
                                 <Grid.Effect>
                                     <DropShadowEffect/>
