@@ -1106,10 +1106,21 @@ namespace DBIntegrator
 
 
 
+
+
+
         #endregion
 
-        
-
-
+        private void btnViewLicense_Click(object sender, RoutedEventArgs e)
+        {
+            try {
+                LicenseViewWindow licenseWnd = new LicenseViewWindow();
+                licenseWnd.Show();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error opening license!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 }
