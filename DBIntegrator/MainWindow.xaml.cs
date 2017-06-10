@@ -178,14 +178,15 @@ namespace DBIntegrator
                 TreeViewItemOntologyInfo.SavedFileName = saveDlg.FileName;
 
                 OntologyGraph ontologyGraph = g as OntologyGraph;
-                UpdateTreeView(ontologyGraph);
+                UpdateTreeView(ontologyGraph, this.ontologyTreeView);
 
             }
         }
 
-        private void UpdateTreeView(OntologyGraph ontologyGraph)
+        //needs improvements
+        private void UpdateTreeView(OntologyGraph ontologyGraph, TreeView treeView) //only 1-level ontologies (no subclasses)
         {
-            this.ontologyTreeView.Items.Clear();
+            treeView.Items.Clear();
             TreeViewItem thingItem = new TreeViewItem() { Header = "Thing" };
 
             foreach (var oclass in ontologyGraph.AllClasses)
@@ -243,7 +244,7 @@ namespace DBIntegrator
                 thingItem.Items.Add(classItem);
 
             }
-            this.ontologyTreeView.Items.Add(thingItem);
+            treeView.Items.Add(thingItem);
         }
 
         internal enum OntologyObjectType
@@ -422,6 +423,76 @@ namespace DBIntegrator
             ((selected.Header as StackPanel).Children[0] as Image).Source = new BitmapImage(new Uri(@"/Images/ontology_Object.png", UriKind.Relative));
             selected.Tag = newInfo;
         }
+
+        private void DeleteOntologyNode(OntologyResource node, OntologyGraph g, OntologyClass parentClass=null) //deletes ontology node and all its children
+        { 
+            if(node is OntologyClass)
+            {
+                OntologyClass oclass = node as OntologyClass;
+                if(oclass.IsBottomClass)
+                {
+                    //delete all class properties and the class itself
+                    IEnumerable<OntologyProperty> classProps = g.AllProperties.Where(prop => prop.Domains.Contains(oclass));
+                    //if property has several domains -> do not delete it, simply delete one of its domains
+                    foreach(var cprop in classProps.ToList())
+                    {
+                        DeleteOntologyNode(cprop, g, oclass);
+                    }
+
+                    //now remove class
+                    g.Retract(oclass.Triples.ToList());
+                }   
+                else //class has subclasses
+                {
+                    //delete subclasses first
+                    foreach(var subclass in oclass.DirectSubClasses.ToList())
+                    {
+                        DeleteOntologyNode(subclass, g);
+                    }
+                }
+            }
+            else if(node is OntologyProperty)
+            {
+                OntologyProperty cprop = node as OntologyProperty;
+
+                if (cprop.Domains.Count() > 1)
+                {
+                    if (parentClass == null)
+                    {
+                        throw new ArgumentNullException("When deleting property, parent class shoud be given!");
+                    }
+
+                    cprop.RemoveDomain(parentClass);
+                }
+                else //delete property
+                {
+                    g.Retract(cprop.Triples.ToList());
+                }
+            }
+        }
+
+        private void ontologyTreeView_KeyUp(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Delete) //delete ontology element
+            {
+                TreeViewItem selected = this.ontologyTreeView.SelectedItem as TreeViewItem;
+                TreeViewItemOntologyInfo ontologyInfo = selected.Tag as TreeViewItemOntologyInfo;
+
+                OntologyGraph ograph = ontologyInfo.OntologyGraph;
+                OntologyResource node = ograph.AllClasses.Where(c => c.ToString() == ontologyInfo.URI).FirstOrDefault();
+                node = node ?? ograph.AllProperties.Where(p => p.ToString() == ontologyInfo.URI).FirstOrDefault();
+
+                if(node == null)
+                {
+                    throw new InvalidOperationException("Cannot get the selected node! Aborting.");
+                }
+
+                DeleteOntologyNode(node, ograph);
+                UpdateTreeView(ograph, this.ontologyTreeView);
+                btnSaveChanges.IsEnabled = true;
+            }
+        }
+
         #endregion
 
         #region Ontology Merger Tab
@@ -1103,14 +1174,6 @@ namespace DBIntegrator
             this.tabQuery.IsSelected = true;
         }
 
-
-
-
-
-
-
-        #endregion
-
         private void btnViewLicense_Click(object sender, RoutedEventArgs e)
         {
             try {
@@ -1122,5 +1185,98 @@ namespace DBIntegrator
                 MessageBox.Show(ex.Message, "Error opening license!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        #endregion
+
+        #region OntoViz TAB
+        private void UpdateTreeViewMultiLevel(OntologyGraph ontologyGraph, TreeView treeView)
+        {
+            treeView.Items.Clear();
+            TreeViewItem thingItem = new TreeViewItem() { Header = "Thing" };
+
+            UpdateTreeViewMultiLevel(ontologyGraph.AllClasses, ontologyGraph, thingItem);
+
+            treeView.Items.Add(thingItem);
+        }
+
+        private void UpdateTreeViewMultiLevel(IEnumerable<OntologyClass> directSubClasses, OntologyGraph ontologyGraph, TreeViewItem parentTVI)
+        {
+            foreach (var oclass in directSubClasses)
+            {
+                TreeViewItem classItem = GetTreeViewItem(oclass.ToString(), OntologyObjectType.CLASS);
+                classItem.Tag = new TreeViewItemOntologyInfo
+                {
+                    OntologyGraph = ontologyGraph,
+                    Type = OntologyObjectType.CLASS,
+                    URI = oclass.ToString()
+                };
+
+                if (!oclass.IsBottomClass)
+                {
+                    UpdateTreeViewMultiLevel(oclass.DirectSubClasses, ontologyGraph, classItem);
+                }
+
+                //add DataType properties
+                var classDtProps = ontologyGraph.OwlDatatypeProperties.Where(p => p.Domains.Contains(oclass)).ToList();
+
+                foreach (var dtProp in classDtProps)
+                {
+                    TreeViewItem dtPropItem = GetTreeViewItem(dtProp.ToString(), OntologyObjectType.DATATYPE_PROPERTY);
+                    dtPropItem.Tag = new TreeViewItemOntologyInfo
+                    {
+                        OntologyGraph = ontologyGraph,
+                        URI = dtProp.ToString(),
+                        Type = OntologyObjectType.DATATYPE_PROPERTY,
+                        Domain = oclass.ToString()
+                    };
+
+                    //get range of this dataType property
+                    if (dtProp.Ranges.Count() > 0)
+                    {
+                        (dtPropItem.Tag as TreeViewItemOntologyInfo).Range = dtProp.Ranges.First().ToString();
+                    }
+                    else (dtPropItem.Tag as TreeViewItemOntologyInfo).Range = "NO RANGE DEFINED";
+
+                    dtPropItem.ToolTip = $"Type: owl:DatatypeProperty\nRange(s): {(dtPropItem.Tag as TreeViewItemOntologyInfo).Range}";
+                    classItem.Items.Add(dtPropItem);
+                }
+
+                //add Object properties
+                var objectProps = ontologyGraph.OwlObjectProperties.Where(p => p.Domains.Contains(oclass));
+                foreach (var objProp in objectProps)
+                {
+                    TreeViewItem objPropItem = GetTreeViewItem(objProp.ToString(), OntologyObjectType.OBJECT_PROPERTY);
+                    objPropItem.Tag = new TreeViewItemOntologyInfo
+                    {
+                        URI = objProp.ToString(),
+                        Domain = oclass.ToString(),
+                        Range = string.Join("\n", objProp.Ranges),
+                        OntologyGraph = ontologyGraph,
+                        Type = OntologyObjectType.OBJECT_PROPERTY
+                    };
+                    objPropItem.ToolTip = $"Type: owl:ObjectProperty\nRange(s): {string.Join("\n", objProp.Ranges)}";
+                    classItem.Items.Add(objPropItem);
+                }
+                parentTVI.Items.Add(classItem);
+            }
+        }
+
+        private void btnOpenOntology4Viz_Click(object sender, RoutedEventArgs e)
+        {
+            string ontoPath = ShowOpenOntologyDialog();
+
+            if (ontoPath != null)
+            {
+                OntologyGraph ograph = new OntologyGraph();
+                ograph.LoadFromFile(ontoPath);
+
+                UpdateTreeViewMultiLevel(ograph, this.tvOntologyViz);
+                
+            }
+
+        }
+        #endregion
+
+        
     }
 }
