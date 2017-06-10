@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="DBIntegrator - View License Agreement" Height="636.586" Width="507.317" WindowStartupLocation="CenterScreen">
     <Grid>
-        <TextBox x:Name="txtBlockLicense" TextWrapping="Wrap" Text="{local:License}" FontSize="14" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible"/>
+        <TextBox x:Name="txtBlockLicense" TextWrapping="Wrap" Text="{local:License}" IsReadOnly="True" FontSize="14" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible"/>
 
     </Grid>
 </Window>
