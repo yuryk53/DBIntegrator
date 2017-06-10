@@ -1174,6 +1174,11 @@ namespace DBIntegrator
             this.tabQuery.IsSelected = true;
         }
 
+        private void hyperOntoVizTab_Click(object sender, RoutedEventArgs e)
+        {
+            this.ontoVizTab.IsSelected = true;
+        }
+
         private void btnViewLicense_Click(object sender, RoutedEventArgs e)
         {
             try {
@@ -1185,7 +1190,6 @@ namespace DBIntegrator
                 MessageBox.Show(ex.Message, "Error opening license!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
         #endregion
 
         #region OntoViz TAB
@@ -1275,6 +1279,7 @@ namespace DBIntegrator
             }
 
         }
+
         #endregion
 
         

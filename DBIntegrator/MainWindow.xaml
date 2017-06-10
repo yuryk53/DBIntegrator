@@ -85,7 +85,8 @@
                         <Run Text="This software is designed for database integration using ontological mappings in real time. User can pose a SPARQL query to a federated shema and obtain a result, which is consistent across two distributed databases."/><LineBreak/><Run Text="Sequence of work with software is following: "/>
                         <Hyperlink x:Name="hyperMapGeneratorTab" Click="hyperMapGeneratorTab_Click" >Generate databases' ontologies</Hyperlink>,
                         <Hyperlink x:Name="hyperOntologyMergerTab" Click="hyperOntologyMergerTab_Click" >Merge generated ontologies</Hyperlink>,
-                        <Hyperlink x:Name="hyperQueryTab" Click="hyperQueryTab_Click" >Query federated schema</Hyperlink>
+                        <Hyperlink x:Name="hyperQueryTab" Click="hyperQueryTab_Click" >Query federated schema</Hyperlink>,
+                        <Hyperlink x:Name="hyperOntoVizTab" Click="hyperOntoVizTab_Click" >Visualize an ontology</Hyperlink>
                         <LineBreak/><LineBreak/>
                         <Run Text="Software is licensed under GNU GPL v3. You should have received a copy of the GNU General Public License along with 'Database integrator'.  If not, see http:www.gnu.org/licenses/" />
                     </TextBlock>
