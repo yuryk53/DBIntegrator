@@ -12,7 +12,9 @@ USAGE INSTRUCTIONS:
 3. You need to configure two databases to integrate (or have existing ones).
 4. Connection strings for existing databases you should input into appropriate sections in 'settings' section on each tab of the program you'll work with.
 
+----------------------------------------
 Copyrights:
+
 This software uses:
   1. WordNet library (WordNet 3.0 Copyright 2006 by Princeton University) - LGPL v2.1 license, 
   2. dotNetRDF library (Copyright (c) 2009-2013 dotNetRDF Project) - MIT license.
